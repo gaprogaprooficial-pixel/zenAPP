@@ -1,0 +1,205 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .chat-wallpaper { 
+    background-color: #0b141a;
+    background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
+    background-blend-mode: overlay;
+    background-opacity: 0.06; 
+  }
+  .bubble-in { background-color: #202c33; border-radius: 0 15px 15px 15px; align-self: flex-start; }
+  .bubble-out { background-color: #005c4b; border-radius: 15px 0 15px 15px; align-self: flex-end; }
+  .v-gold { color: #facc15; filter: drop-shadow(0 0 3px #facc15); }
+  .v-blue { color: #3b82f6; filter: drop-shadow(0 0 3px #3b82f6); }
+  .v-green { color: #22c55e; filter: drop-shadow(0 0 3px #22c55e); }
+</style>
+
+<body class="bg-[#111b21] font-sans text-slate-200 overflow-hidden">
+  
+  <div id="maint-screen" class="hidden fixed inset-0 bg-black z-[5000] flex flex-col items-center justify-center text-center p-6">
+      <h1 class="text-5xl font-black text-red-600 mb-4 uppercase italic">SISTEMA CERRADO</h1>
+      <p class="text-slate-400 text-xl font-bold uppercase">Mantenimiento en curso</p>
+  </div>
+
+  <div id="app">
+    <div id="login-screen" class="h-screen flex flex-col items-center justify-center bg-[#111b21]">
+      <h1 class="text-4xl font-black text-[#00a884] mb-8 uppercase italic tracking-widest">ZenMail</h1>
+      <div class="bg-[#222e35] p-8 rounded-2xl w-[380px] shadow-2xl border-t-4 border-[#00a884]">
+        <input type="text" id="login-user" placeholder="Usuario" class="w-full p-4 bg-[#2a3942] rounded-xl outline-none mb-4 text-white border border-transparent focus:border-[#00a884]">
+        <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 bg-[#2a3942] rounded-xl outline-none mb-6 text-white border border-transparent focus:border-[#00a884]">
+        <button id="btn-auth" onclick="auth()" class="w-full bg-[#00a884] py-4 rounded-xl font-black text-[#111b21] uppercase hover:bg-[#06cf9c] transition-all active:scale-95">Entrar</button>
+      </div>
+    </div>
+
+    <div id="chat-interface" class="hidden h-screen flex bg-[#111b21]">
+      <aside class="w-[400px] border-r border-white/5 flex flex-col bg-[#111b21]">
+        <header class="p-4 bg-[#202c33] flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img id="my-avatar" onclick="openAdminPanel()" class="w-10 h-10 rounded-full cursor-pointer object-cover border-2 border-[#00a884]">
+                <div>
+                    <div class="flex items-center gap-1">
+                        <p id="my-name-display" class="text-xs font-bold"></p>
+                        <span id="my-badges" class="flex gap-0.5"></span>
+                    </div>
+                    <p id="my-id-display" class="text-[10px] text-[#00a884] font-black"></p>
+                </div>
+            </div>
+            <button onclick="logout()" class="text-slate-500">❌</button>
+        </header>
+        <div id="chats-list" class="flex-1 overflow-y-auto"></div>
+      </aside>
+      <main class="flex-1 flex flex-col chat-wallpaper">
+        <header id="chat-header" class="hidden p-4 bg-[#202c33] flex items-center justify-between border-l border-white/5">
+            <div class="flex items-center gap-4">
+                <div id="target-avatar" class="w-10 h-10 rounded-full"></div>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1">
+                        <span id="target-name" class="font-bold text-white text-sm"></span>
+                        <span id="target-badges" class="flex gap-0.5"></span>
+                    </div>
+                    <span id="target-id-label" class="text-[9px] text-slate-400 font-bold uppercase"></span>
+                </div>
+            </div>
+        </header>
+        <div id="messages-flow" class="flex-1 p-8 overflow-y-auto flex flex-col gap-4"></div>
+        <div id="chat-input-bar" class="hidden p-4 bg-[#202c33] flex items-center gap-4">
+            <input type="text" id="msg-input" placeholder="Mensaje..." class="flex-1 p-3 bg-[#2a3942] rounded-xl outline-none text-white text-sm">
+            <button onclick="send()" class="text-[#00a884] font-black px-4">ENVIAR</button>
+        </div>
+      </main>
+    </div>
+
+    <div id="admin-modal" class="hidden fixed inset-0 bg-black/95 z-[1000] flex flex-col p-6">
+        <header class="flex justify-between items-center mb-6">
+            <h2 class="text-[#00a884] font-black text-2xl uppercase italic">Control Maestro</h2>
+            <div class="flex gap-4">
+                <button id="global-maint-btn" onclick="toggleGlobalMaint()" class="bg-red-600 px-6 py-2 rounded text-xs text-white font-black uppercase">MANTENIMIENTO GLOBAL</button>
+                <button onclick="closeAdmin()" class="bg-white/10 px-6 py-2 rounded text-xs text-white font-black uppercase">Cerrar</button>
+            </div>
+        </header>
+        <div id="admin-list-container" class="flex-1 overflow-y-auto space-y-4"></div>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_PASS = "ZM_X99_ROOT_#SECURITY_2026";
+    const MASTER_ID = "123-abc";
+    
+    let users = [];
+    let messages = [];
+    let globalMaint = false;
+    let me = null;
+    let talkingTo = null;
+
+    // CARGA SEGURA DE DATOS
+    function loadDB() {
+        try {
+            users = JSON.parse(localStorage.getItem('za_id_users')) || [];
+            messages = JSON.parse(localStorage.getItem('za_id_messages')) || [];
+            globalMaint = JSON.parse(localStorage.getItem('za_global_maint')) || false;
+            
+            // SI EL ADMIN NO EXISTE, LO CREAMOS
+            if (!users.find(u => u.id === MASTER_ID)) {
+                users.push({ 
+                    id: MASTER_ID, name: "Admin", pass: "root", 
+                    banned: false, isMaint: false, 
+                    badges: {gold: true, blue: true, green: true}, 
+                    photo: "https://ui-avatars.com/api/?name=Admin&background=00a884&color=fff" 
+                });
+                saveDB();
+            }
+        } catch(e) {
+            console.error("Error cargando DB, reseteando...");
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    function saveDB() {
+        localStorage.setItem('za_id_users', JSON.stringify(users));
+        localStorage.setItem('za_id_messages', JSON.stringify(messages));
+        localStorage.setItem('za_global_maint', JSON.stringify(globalMaint));
+    }
+
+    const ICONS = {
+        gold: '<svg class="w-3.5 h-3.5 v-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.64.304 1.24.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>',
+        blue: '<svg class="w-3.5 h-3.5 v-blue" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293l-4 4a1 1 0 01-1.414 0l-2-2a1 1 0 111.414-1.414L9 10.586l3.293-3.293a1 1 0 111.414 1.414z"></path></svg>',
+        green: '<svg class="w-3.5 h-3.5 v-green" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"></path></svg>'
+    };
+
+    function getBadgesHTML(b) {
+        if(!b) return '';
+        return (b.gold?ICONS.gold:'') + (b.blue?ICONS.blue:'') + (b.green?ICONS.green:'');
+    }
+
+    // AUTH CORREGIDA
+    function auth() {
+        loadDB();
+        const uName = document.getElementById('login-user').value.trim();
+        const uPass = document.getElementById('login-pass').value.trim();
+        
+        if(!uName || !uPass) return alert("Completa los campos");
+
+        let user = users.find(x => x.name.toLowerCase() === uName.toLowerCase() && x.pass === uPass);
+        
+        if(user) {
+            if(user.banned) return alert("ACCESO DENEGADO (BAN)");
+            me = user;
+        } else {
+            // REGISTRO NUEVO
+            const newID = "ZEN-" + Math.floor(1000 + Math.random() * 9000);
+            me = { id: newID, name: uName, pass: uPass, banned: false, isMaint: false, badges: {}, photo: `https://ui-avatars.com/api/?name=${uName}&background=random` };
+            users.push(me);
+            saveDB();
+        }
+        
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('chat-interface').classList.remove('hidden');
+        document.getElementById('my-name-display').innerText = me.name;
+        document.getElementById('my-id-display').innerText = me.id;
+        document.getElementById('my-avatar').src = me.photo;
+        renderHistory();
+    }
+
+    // SINCRONIZACIÓN
+    setInterval(() => {
+        if(!me) return;
+        loadDB();
+        let u = users.find(x => x.id === me.id);
+        
+        // REVISAR MANTENIMIENTO
+        if(me.id === MASTER_ID) {
+            document.getElementById('maint-screen').classList.add('hidden');
+        } else {
+            if(globalMaint || (u && u.isMaint)) document.getElementById('maint-screen').classList.remove('hidden');
+            else document.getElementById('maint-screen').classList.add('hidden');
+        }
+
+        document.getElementById('my-badges').innerHTML = getBadgesHTML(u.badges);
+        if(talkingTo) renderMessages();
+        renderHistory();
+    }, 1000);
+
+    function toggleGlobalMaint() {
+        globalMaint = !globalMaint;
+        saveDB();
+        document.getElementById('global-maint-btn').innerText = globalMaint ? "QUITAR MANT. GLOBAL" : "MANTENIMIENTO GLOBAL";
+    }
+
+    function renderAdminList() {
+      document.getElementById('admin-list-container').innerHTML = users.map(u => `
+        <div class="p-4 bg-[#202c33] rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <img src="${u.photo}" class="w-10 h-10 rounded-full border ${u.id===MASTER_ID?'border-yellow-500':'border-transparent'}">
+                <div>
+                    <p class="text-white font-bold text-sm">${u.name} <span class="text-yellow-500">(${u.pass})</span></p>
+                    <div class="flex gap-1 mt-1">
+                        <button onclick="toggleBadge('${u.id}', 'gold')" class="${u.badges?.gold?'bg-yellow-500':'bg-gray-700'} text-[8px] px-1 rounded">GOLD</button>
+                        <button onclick="toggleBadge('${u.id}', 'green')" class="${u.badges?.green?'bg-green-500':'bg-gray-700'} text-[8px] px-1 rounded">VIP</button>
+                        <button onclick="toggleBadge('${u.id}', 'blue')" class="${u.badges?.blue?'bg-blue-500':'bg-gray-700'} text-[8px] px-1 rounded">AZUL</button>
+                    </div>
+                </div>
+            </div>
+            ${u.id !== MASTER_ID ? `
+            <div class="flex gap-1">
+                <button onclick="toggleSingleMaint('${u.id}')" class="bg-red-500 px-2 py-1 rounded text-[9px]">${u.isMaint?'LIBERAR':'BLOQUEAR'}</button>
+                <button onclick="
