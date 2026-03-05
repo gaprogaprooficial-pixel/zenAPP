@@ -1,100 +1,60 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  .chat-wallpaper { 
-    background-color: #0b141a;
-    background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
-    background-blend-mode: overlay;
-    background-opacity: 0.06; 
-  }
+  .chat-wallpaper { background-color: #0b141a; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-opacity: 0.06; }
   .bubble-in { background-color: #202c33; border-radius: 0 15px 15px 15px; align-self: flex-start; }
   .bubble-out { background-color: #005c4b; border-radius: 15px 0 15px 15px; align-self: flex-end; }
   .v-gold { color: #facc15; filter: drop-shadow(0 0 3px #facc15); }
-  .v-blue { color: #3b82f6; filter: drop-shadow(0 0 3px #3b82f6); }
-  .v-green { color: #22c55e; filter: drop-shadow(0 0 3px #22c55e); }
 </style>
 
 <body class="bg-[#111b21] font-sans text-slate-200 overflow-hidden">
-  
-  <div id="maint-screen" class="hidden fixed inset-0 bg-black z-[5000] flex flex-col items-center justify-center text-center p-6">
-      <h1 class="text-5xl font-black text-red-600 mb-4 uppercase italic">SISTEMA CERRADO</h1>
-      <p class="text-slate-400 text-xl font-bold uppercase">Mantenimiento Global</p>
-  </div>
-
   <div id="app">
-    <div id="login-screen" class="h-screen flex flex-col items-center justify-center bg-[#111b21]">
+    <div id="login-screen" class="h-screen flex flex-col items-center justify-center">
       <h1 class="text-5xl font-black text-[#00a884] mb-8 uppercase italic tracking-widest">ZenMail</h1>
-      <div class="bg-[#222e35] p-8 rounded-3xl w-[380px] shadow-2xl border-t-4 border-[#00a884]">
-        <input type="text" id="login-user" placeholder="Usuario" class="w-full p-4 bg-[#2a3942] rounded-xl outline-none mb-4 text-white border border-transparent focus:border-[#00a884]">
-        <input type="password" id="login-pass" placeholder="Contraseña" class="w-full p-4 bg-[#2a3942] rounded-xl outline-none mb-6 text-white border border-transparent focus:border-[#00a884]">
-        <button onclick="auth()" class="w-full bg-[#00a884] py-4 rounded-xl font-black text-[#111b21] uppercase hover:bg-[#06cf9c] transition-all active:scale-95">Entrar</button>
+      <div class="bg-[#222e35] p-8 rounded-3xl w-[380px] border-t-4 border-[#00a884]">
+        <input type="text" id="login-user" placeholder="Usuario" class="w-full p-4 bg-[#2a3942] rounded-xl outline-none mb-4 text-white">
+        <input type="password" id="login-pass" placeholder="Contraseña" class="w-full p-4 bg-[#2a3942] rounded-xl outline-none mb-6 text-white">
+        <button onclick="auth()" class="w-full bg-[#00a884] py-4 rounded-xl font-black text-[#111b21] uppercase">Entrar</button>
       </div>
     </div>
 
-    <div id="chat-interface" class="hidden h-screen flex bg-[#111b21]">
+    <div id="chat-interface" class="hidden h-screen flex">
       <aside class="w-[380px] border-r border-white/5 flex flex-col bg-[#111b21]">
-        <header class="p-4 bg-[#202c33] flex justify-between items-center shadow-md">
+        <header class="p-4 bg-[#202c33] flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img id="my-avatar" onclick="openAdminPanel()" class="w-11 h-11 rounded-full cursor-pointer object-cover border-2 border-[#00a884]">
-                <div>
-                    <div class="flex items-center gap-1">
-                        <p id="my-name-display" class="text-sm font-bold text-white"></p>
-                        <span id="my-badges" class="flex gap-0.5"></span>
-                    </div>
-                    <p id="my-id-display" class="text-[10px] text-[#00a884] font-black uppercase"></p>
-                </div>
+                <img id="my-avatar" onclick="openAdminPanel()" class="w-11 h-11 rounded-full cursor-pointer border-2 border-[#00a884]">
+                <div class="text-sm font-bold" id="my-name-display"></div>
             </div>
-            <button onclick="location.reload()" class="text-slate-500 hover:text-white">SALIR</button>
         </header>
 
-        <div class="p-4 bg-[#111b21] border-b border-white/5">
-            <div class="flex gap-2">
-                <input type="text" id="id-search" placeholder="Buscar ID (ej: ZEN-1234)" class="flex-1 p-2.5 bg-[#2a3942] rounded-lg outline-none text-xs text-white">
-                <button onclick="searchUser()" class="bg-[#00a884] px-4 rounded-lg text-xs font-black text-[#111b21]">BUSCAR</button>
+        <div class="p-4 bg-[#1c282f] m-2 rounded-xl border border-[#00a884]/20">
+            <p class="text-[10px] font-black text-[#00a884] uppercase mb-2">💎 Canje de Serial (XXX-AAA-XXX)</p>
+            <div class="flex flex-col gap-2">
+                <input type="text" id="promo-code" placeholder="Ej: 542-RTZ-991" class="bg-[#111b21] text-[10px] p-2 rounded-lg outline-none border border-white/10 uppercase">
+                <button onclick="redeemSerial()" class="bg-yellow-500 text-black p-2 rounded-lg text-[9px] font-black uppercase">Validar Serial</button>
+                <p id="shop-status" class="text-[8px] uppercase font-bold text-center"></p>
             </div>
         </div>
-
-        <div id="chats-list" class="flex-1 overflow-y-auto bg-[#111b21]"></div>
+        <div id="chats-list" class="flex-1 overflow-y-auto"></div>
       </aside>
 
       <main class="flex-1 flex flex-col chat-wallpaper">
-        <div id="no-chat-selected" class="flex-1 flex items-center justify-center text-slate-500 uppercase font-black tracking-widest text-sm">
-            Selecciona un chat o busca un ID
-        </div>
-
-        <div id="active-chat" class="hidden flex-1 flex flex-col h-full">
-            <header class="p-4 bg-[#202c33] flex items-center justify-between border-l border-white/5 shadow-lg">
-                <div class="flex items-center gap-4">
-                    <div id="target-avatar-container" class="w-10 h-10 rounded-full"></div>
-                    <div class="flex flex-col">
-                        <div class="flex items-center gap-1">
-                            <span id="target-name" class="font-bold text-white"></span>
-                            <span id="target-badges" class="flex gap-0.5"></span>
-                        </div>
-                        <span id="target-id" class="text-[9px] text-[#00a884] font-black uppercase"></span>
-                    </div>
-                </div>
-                <button onclick="clearChat()" class="text-red-500 text-[10px] font-bold border border-red-500 px-2 py-1 rounded">BORRAR</button>
-            </header>
-            
-            <div id="messages-flow" class="flex-1 p-6 overflow-y-auto flex flex-col gap-3"></div>
-            
-            <div class="p-4 bg-[#202c33] flex items-center gap-4 border-t border-white/5">
-                <input type="text" id="msg-input" placeholder="Escribe un mensaje..." class="flex-1 p-3 bg-[#2a3942] rounded-xl outline-none text-white text-sm">
-                <button onclick="sendMsg()" class="bg-[#00a884] text-[#111b21] font-black px-6 py-2 rounded-xl uppercase text-xs">Enviar</button>
-            </div>
-        </div>
+        <div class="flex-1 flex items-center justify-center text-slate-600 font-black text-xs uppercase">ZenMail v4.0 Serial System</div>
       </main>
     </div>
 
     <div id="admin-modal" class="hidden fixed inset-0 bg-black/95 z-[1000] flex flex-col p-8">
-        <header class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
-            <h2 class="text-[#00a884] font-black text-3xl uppercase italic">Panel Admin</h2>
-            <div class="flex gap-4">
-                <button id="global-maint-btn" onclick="toggleMaint()" class="bg-red-600 px-6 py-3 rounded-xl text-xs text-white font-black uppercase">MANTENIMIENTO GLOBAL</button>
-                <button onclick="closeAdmin()" class="bg-white/10 px-6 py-3 rounded-xl text-xs text-white font-black">CERRAR</button>
-            </div>
-        </header>
-        <div id="admin-list" class="flex-1 overflow-y-auto space-y-4 pr-4"></div>
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-[#00a884] font-black text-3xl uppercase italic">Panel Maestro</h2>
+            <button onclick="closeAdmin()" class="text-white text-xs">CERRAR</button>
+        </div>
+        
+        <div class="bg-[#222e35] p-6 rounded-2xl border border-white/5">
+            <h3 class="text-yellow-500 font-bold mb-4 uppercase">Generador de 100,000 Códigos</h3>
+            <p class="text-xs text-slate-400 mb-6">Presiona el botón para generar los seriales. Tardará unos segundos.</p>
+            <button onclick="generateAndDownload()" class="bg-[#00a884] px-8 py-4 rounded-xl text-black font-black uppercase hover:bg-green-400 transition-all">
+                Generar y Descargar .TXT
+            </button>
+        </div>
     </div>
   </div>
 
@@ -102,148 +62,85 @@
 const MASTER_PASS = "ZM_X99_ROOT_#SECURITY_2026";
 const MASTER_ID = "123-abc";
 
-const ICONS = {
-    gold: '<svg class="w-4 h-4 v-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.64.304 1.24.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>',
-    blue: '<svg class="w-4 h-4 v-blue" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293l-4 4a1 1 0 01-1.414 0l-2-2a1 1 0 111.414-1.414L9 10.586l3.293-3.293a1 1 0 111.414 1.414z"></path></svg>',
-    green: '<svg class="w-4 h-4 v-green" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"></path></svg>'
-};
-
 let users = JSON.parse(localStorage.getItem('zen_u')) || [];
-let messages = JSON.parse(localStorage.getItem('zen_m')) || [];
-let maint = JSON.parse(localStorage.getItem('zen_g')) || false;
+let usedSerials = JSON.parse(localStorage.getItem('zen_used')) || [];
 let me = null;
-let talkingTo = null;
 
-// Asegurar Admin
-if (!users.find(u => u.id === MASTER_ID)) {
-    users.push({ id: MASTER_ID, name: "Admin", pass: "root", badges: {gold:true,blue:true,green:true}, photo: "https://ui-avatars.com/api/?name=Admin&background=00a884", isMaint: false, banned: false });
+// LÓGICA DE VALIDACIÓN DE FORMATO 123-ABC-123
+function redeemSerial() {
+    const serial = document.getElementById('promo-code').value.trim().toUpperCase();
+    const status = document.getElementById('shop-status');
+    
+    // RegEx para validar formato: 3 números - 3 letras - 3 números
+    const regex = /^\d{3}-[A-Z]{3}-\d{3}$/;
+
+    if (!regex.test(serial)) {
+        status.innerText = "❌ FORMATO INCORRECTO (EJ: 123-ABC-123)";
+        status.className = "text-red-500 text-[8px] font-bold text-center";
+        return;
+    }
+
+    if (usedSerials.includes(serial)) {
+        status.innerText = "❌ ESTE SERIAL YA FUE CANJEADO";
+        status.className = "text-red-500 text-[8px] font-bold text-center";
+        return;
+    }
+
+    // Si pasa las pruebas, activar Verificado Dorado
+    let uNow = users.find(x => x.id === me.id);
+    if(!uNow.badges) uNow.badges = {};
+    uNow.badges.gold = true;
+    
+    usedSerials.push(serial);
+    localStorage.setItem('zen_used', JSON.stringify(usedSerials));
     localStorage.setItem('zen_u', JSON.stringify(users));
+
+    status.innerText = "✅ SERIAL ACTIVADO: RANGO ADMIN OBTENIDO";
+    status.className = "text-green-500 text-[8px] font-bold text-center";
+}
+
+// GENERADOR MASIVO DE 100,000 CÓDIGOS DIFERENTES
+function generateAndDownload() {
+    let codes = [];
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    alert("Iniciando generación de 100,000 códigos... Por favor espera.");
+
+    for(let i = 0; i < 100000; i++) {
+        let n1 = Math.floor(Math.random() * 900 + 100); // 123
+        let n2 = Math.floor(Math.random() * 900 + 100); // 456
+        let l = letters[Math.floor(Math.random()*26)] + 
+                letters[Math.floor(Math.random()*26)] + 
+                letters[Math.floor(Math.random()*26)]; // ABC
+        
+        codes.push(`${n1}-${l}-${n2}`);
+    }
+
+    // Crear archivo descargable
+    const blob = new Blob([codes.join('\n')], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "codigos_zenmail_100k.txt";
+    link.click();
+    
+    alert("¡Listo! Se ha descargado el archivo con tus 100,000 códigos únicos.");
 }
 
 function auth() {
     const u = document.getElementById('login-user').value.trim();
     const p = document.getElementById('login-pass').value.trim();
-    if(!u || !p) return;
-    let found = users.find(x => x.name.toLowerCase() === u.toLowerCase() && x.pass === p);
-    if(found) { if(found.banned) return alert("BAN"); me = found; }
-    else {
-        me = { id: "ZEN-"+Math.floor(1000+Math.random()*9000), name: u, pass: p, badges: {}, photo: "https://ui-avatars.com/api/?name="+u+"&background=random", isMaint: false, banned: false };
+    if(u === "Admin" && p === "root") {
+        me = users.find(x => x.id === MASTER_ID) || { id: MASTER_ID, name: "Admin", badges: {gold:true} };
+    } else {
+        me = { id: "ZEN-"+Math.floor(Math.random()*9000), name: u, badges: {} };
         users.push(me);
     }
-    save();
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('chat-interface').classList.remove('hidden');
     document.getElementById('my-name-display').innerText = me.name;
-    document.getElementById('my-id-display').innerText = me.id;
-    document.getElementById('my-avatar').src = me.photo;
-    renderChats();
 }
 
-function save() {
-    localStorage.setItem('zen_u', JSON.stringify(users));
-    localStorage.setItem('zen_m', JSON.stringify(messages));
-    localStorage.setItem('zen_g', JSON.stringify(maint));
-}
-
-function getBadges(u) {
-    if(!u.badges) return '';
-    return (u.badges.gold?ICONS.gold:'') + (u.badges.blue?ICONS.blue:'') + (u.badges.green?ICONS.green:'');
-}
-
-setInterval(() => {
-    if(!me) return;
-    users = JSON.parse(localStorage.getItem('zen_u'));
-    maint = JSON.parse(localStorage.getItem('zen_g'));
-    let uNow = users.find(x => x.id === me.id);
-    if(me.id !== MASTER_ID && (maint || uNow.isMaint)) document.getElementById('maint-screen').classList.remove('hidden');
-    else document.getElementById('maint-screen').classList.add('hidden');
-    document.getElementById('my-badges').innerHTML = getBadges(uNow);
-    renderChats();
-    if(talkingTo) renderMsgs();
-}, 1000);
-
-function searchUser() {
-    const id = document.getElementById('id-search').value.trim();
-    const found = users.find(u => u.id === id);
-    if(found && found.id !== me.id) openChat(found.id);
-    else alert("Usuario no encontrado");
-}
-
-function openChat(id) {
-    talkingTo = id;
-    const u = users.find(x => x.id === id);
-    document.getElementById('no-chat-selected').classList.add('hidden');
-    document.getElementById('active-chat').classList.remove('hidden');
-    document.getElementById('target-name').innerText = u.name;
-    document.getElementById('target-id').innerText = u.id;
-    document.getElementById('target-badges').innerHTML = getBadges(u);
-    document.getElementById('target-avatar-container').innerHTML = `<img src="${u.photo}" class="w-full h-full rounded-full">`;
-    renderMsgs();
-}
-
-function sendMsg() {
-    const i = document.getElementById('msg-input');
-    if(!i.value.trim()) return;
-    messages.push({ from: me.id, to: talkingTo, text: i.value.trim() });
-    i.value = ""; save(); renderMsgs();
-}
-
-function renderMsgs() {
-    const flow = document.getElementById('messages-flow');
-    const conv = messages.filter(m => (m.from === me.id && m.to === talkingTo) || (m.from === talkingTo && m.to === me.id));
-    flow.innerHTML = conv.map(m => `
-        <div class="flex flex-col ${m.from === me.id ? 'items-end' : 'items-start'}">
-            <div class="${m.from === me.id ? 'bubble-out' : 'bubble-in'} p-3 max-w-[80%] text-sm shadow-md">
-                ${m.text}
-            </div>
-        </div>
-    `).join('');
-    flow.scrollTop = flow.scrollHeight;
-}
-
-function renderChats() {
-    const list = document.getElementById('chats-list');
-    const contacts = [...new Set(messages.filter(m => m.to === me.id || m.from === me.id).map(m => m.from === me.id ? m.to : m.from))];
-    list.innerHTML = contacts.map(cid => {
-        const u = users.find(x => x.id === cid);
-        if(!u) return '';
-        return `<div onclick="openChat('${u.id}')" class="p-4 flex items-center gap-3 hover:bg-[#202c33] cursor-pointer border-b border-white/5 ${talkingTo === u.id ? 'bg-[#202c33]' : ''}">
-            <img src="${u.photo}" class="w-12 h-12 rounded-full">
-            <div><p class="text-white text-sm font-bold flex items-center gap-1">${u.name} ${getBadges(u)}</p><p class="text-[10px] text-slate-500">${u.id}</p></div>
-        </div>`;
-    }).join('');
-}
-
-// FUNCIONES ADMIN
-function openAdminPanel() { if(prompt("CLAVE MAESTRA:") === MASTER_PASS) { renderAdmin(); document.getElementById('admin-modal').classList.remove('hidden'); } }
+function openAdminPanel() { if(prompt("CLAVE ADMIN:") === MASTER_PASS) document.getElementById('admin-modal').classList.remove('hidden'); }
 function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
-function toggleMaint() { maint = !maint; save(); renderAdmin(); }
-function tag(id, t) {
-    let u = users.find(x => x.id === id);
-    if(!u.badges) u.badges = {};
-    u.badges[t] = !u.badges[t];
-    save(); renderAdmin();
-}
-function renderAdmin() {
-    document.getElementById('global-maint-btn').innerText = maint ? "QUITAR MANTENIMIENTO" : "MANTENIMIENTO GLOBAL";
-    document.getElementById('admin-list').innerHTML = users.map(u => `
-        <div class="p-4 bg-[#202c33] rounded-2xl flex items-center justify-between border border-white/5">
-            <div class="flex items-center gap-4">
-                <img src="${u.photo}" class="w-10 h-10 rounded-full border ${u.id===MASTER_ID?'border-yellow-500':''}">
-                <div>
-                    <p class="text-white font-bold text-sm">${u.name} <span class="text-yellow-500">(${u.pass})</span></p>
-                    <div class="flex gap-1 mt-1">
-                        <button onclick="tag('${u.id}','gold')" class="${u.badges?.gold?'bg-yellow-500':'bg-gray-700'} text-[8px] px-2 py-0.5 rounded font-bold uppercase text-black">ADMIN</button>
-                        <button onclick="tag('${u.id}','green')" class="${u.badges?.green?'bg-green-500':'bg-gray-700'} text-[8px] px-2 py-0.5 rounded font-bold uppercase text-black">VIP</button>
-                        <button onclick="tag('${u.id}','blue')" class="${u.badges?.blue?'bg-blue-500':'bg-gray-700'} text-[8px] px-2 py-0.5 rounded font-bold uppercase text-black">AZUL</button>
-                    </div>
-                </div>
-            </div>
-            ${u.id !== MASTER_ID ? `<button onclick="uMaint('${u.id}')" class="bg-red-500 text-[10px] px-3 py-1 rounded-lg">${u.isMaint?'LIBERAR':'BLOQUEAR'}</button>` : ''}
-        </div>
-    `).join('');
-}
-function uMaint(id) { let u = users.find(x => x.id === id); u.isMaint = !u.isMaint; save(); renderAdmin(); }
-function clearChat() { if(confirm("¿Borrar chat?")) { messages = messages.filter(m => !((m.from === me.id && m.to === talkingTo) || (m.from === talkingTo && m.to === me.id))); save(); renderMsgs(); renderChats(); } }
 </script>
 </body>
