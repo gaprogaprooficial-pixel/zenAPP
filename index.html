@@ -1,169 +1,156 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  .chat-wallpaper { background-color: #0b141a; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-opacity: 0.06; }
+  .chat-wallpaper { background-color: #0b141a; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-opacity: 0.05; }
   .v-gold { color: #facc15; filter: drop-shadow(0 0 4px #facc15); }
-  .v-blue { color: #3b82f6; filter: drop-shadow(0 0 4px #3b82f6); }
-  .v-green { color: #22c55e; filter: drop-shadow(0 0 4px #22c55e); }
-  .admin-card { background: linear-gradient(145deg, #202c33, #111b21); border: 1px solid rgba(255,255,255,0.05); }
-  .game-target { position: absolute; width: 60px; height: 60px; background: radial-gradient(circle, #00ffcc, #00a884); border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px #00a884; }
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-thumb { background: #00a884; border-radius: 10px; }
+  .game-target { position: absolute; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: transform 0.1s; }
+  .target-normal { background: radial-gradient(circle, #00ffcc, #00a884); box-shadow: 0 0 15px #00a884; }
+  .target-bonus { background: radial-gradient(circle, #facc15, #eab308); box-shadow: 0 0 20px #facc15; animation: ping 1s infinite; }
+  .target-danger { background: radial-gradient(circle, #ef4444, #991b1b); box-shadow: 0 0 15px #ef4444; }
+  .zen-mail-window { background: #0b141a; border: 1px solid rgba(0, 168, 132, 0.2); box-shadow: 0 0 40px rgba(0,0,0,0.8); }
 </style>
 
 <body class="bg-[#111b21] font-sans text-slate-200 overflow-hidden">
-  
-  <div id="lock-screen" class="hidden fixed inset-0 bg-black/95 z-[9999] flex flex-col items-center justify-center text-center p-6 backdrop-blur-md">
-      <div class="w-20 h-20 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-6"></div>
-      <h1 class="text-5xl font-black text-red-600 mb-2 uppercase italic">SISTEMA BLOQUEADO</h1>
-      <p id="lock-msg" class="text-slate-400 font-bold uppercase tracking-[0.3em]"></p>
+
+  <div id="mail-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
+      <div class="zen-mail-window w-full max-w-4xl h-[600px] rounded-[30px] flex flex-col overflow-hidden border-t-4 border-[#00a884]">
+          <header class="p-6 bg-[#202c33] flex justify-between items-center">
+              <div class="flex items-center gap-3">
+                  <span class="text-3xl">📧</span>
+                  <h2 class="text-2xl font-black italic tracking-tighter text-[#00a884]">ZENMAIL PRO</h2>
+              </div>
+              <button onclick="toggleMail()" class="bg-red-500/20 text-red-500 px-4 py-2 rounded-xl font-bold">CERRAR</button>
+          </header>
+          <div class="flex flex-1 overflow-hidden">
+              <aside class="w-64 bg-black/20 p-4 border-r border-white/5 space-y-2">
+                  <button class="w-full bg-[#00a884] text-black font-black p-3 rounded-xl text-xs uppercase">Redactar</button>
+                  <div class="p-3 text-[#00a884] font-bold text-xs bg-[#00a884]/10 rounded-xl">Bandeja de Entrada</div>
+                  <div class="p-3 text-slate-500 font-bold text-xs hover:bg-white/5 rounded-xl cursor-not-allowed">Enviados</div>
+              </aside>
+              <main class="flex-1 p-6 overflow-y-auto space-y-4 bg-[#111b21]">
+                  <div class="p-4 bg-[#202c33] rounded-2xl border-l-4 border-[#00a884]">
+                      <p class="text-[10px] text-[#00a884] font-bold">SISTEMA @ ZENAPP</p>
+                      <h3 class="font-bold text-white">Bienvenido a ZenMail</h3>
+                      <p class="text-sm text-slate-400 mt-2">Tu buzón de comunicaciones cifradas está activo. Los mensajes se auto-destruyen en 24h.</p>
+                  </div>
+              </main>
+          </div>
+      </div>
   </div>
 
   <div id="app">
     <div id="login-screen" class="h-screen flex flex-col items-center justify-center">
-      <h1 class="text-7xl font-black text-[#00a884] mb-8 uppercase italic tracking-tighter drop-shadow-2xl">ZENAPP</h1>
-      <div class="bg-[#222e35] p-10 rounded-[40px] w-[400px] shadow-2xl border-t-8 border-[#00a884]">
-        <input type="text" id="login-user" placeholder="Usuario" class="w-full p-4 bg-[#2a3942] rounded-2xl outline-none mb-4 text-white placeholder-slate-500 border border-transparent focus:border-[#00a884] transition-all">
-        <input type="password" id="login-pass" placeholder="Contraseña" class="w-full p-4 bg-[#2a3942] rounded-2xl outline-none mb-8 text-white placeholder-slate-500 border border-transparent focus:border-[#00a884] transition-all">
-        <button onclick="auth()" class="w-full bg-[#00a884] py-5 rounded-2xl font-black text-[#111b21] uppercase text-lg shadow-lg hover:brightness-110 active:scale-95 transition-all">ACCEDER AL NÚCLEO</button>
+      <h1 class="text-7xl font-black text-[#00a884] mb-8 uppercase italic tracking-tighter">ZENAPP</h1>
+      <div class="bg-[#222e35] p-10 rounded-[40px] w-[400px] shadow-2xl">
+        <input type="text" id="login-user" placeholder="Usuario" class="w-full p-4 bg-[#2a3942] rounded-2xl outline-none mb-4 text-white">
+        <input type="password" id="login-pass" placeholder="Contraseña" class="w-full p-4 bg-[#2a3942] rounded-2xl outline-none mb-8 text-white">
+        <button onclick="auth()" class="w-full bg-[#00a884] py-5 rounded-2xl font-black text-[#111b21] uppercase text-lg shadow-lg">ENTRAR</button>
       </div>
     </div>
 
     <div id="chat-interface" class="hidden h-screen flex bg-[#111b21]">
       <aside class="w-[420px] border-r border-white/5 flex flex-col bg-[#111b21]">
+        
         <header class="p-5 bg-[#202c33] flex justify-between items-center shadow-xl">
             <div class="flex items-center gap-4">
-                <div class="relative">
-                    <img id="my-avatar" onclick="openAdminPanel()" class="w-14 h-14 rounded-full cursor-pointer border-2 border-[#00a884] hover:rotate-6 transition-transform">
-                    <div class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-4 border-[#202c33]"></div>
+                <img id="my-avatar" onclick="openAdminPanel()" class="w-14 h-14 rounded-full cursor-pointer border-2 border-[#00a884]">
+                <div class="flex flex-col gap-1">
+                    <button onclick="toggleGame()" class="bg-[#2a3942] p-2 rounded-xl text-lg" title="Juegos">🎮</button>
+                    <button onclick="toggleMail()" class="bg-[#2a3942] p-2 rounded-xl text-lg" title="ZenMail">📧</button>
                 </div>
-                <button onclick="toggleGame()" class="bg-[#2a3942] p-3 rounded-2xl hover:bg-[#3b4a54] transition-colors" title="Minijuego">🎮</button>
                 <div>
-                    <div class="flex items-center gap-1">
-                        <p id="my-name-display" class="font-bold text-white"></p>
-                        <span id="my-badges" class="flex gap-1"></span>
-                    </div>
+                    <p id="my-name-display" class="font-bold text-white"></p>
                     <p id="my-id-display" class="text-[10px] text-[#00a884] font-black tracking-widest"></p>
                 </div>
             </div>
-            <button onclick="location.reload()" class="bg-red-500/10 text-red-500 p-2 rounded-lg text-[9px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">Salir</button>
+            <button onclick="location.reload()" class="bg-red-500/10 text-red-500 p-2 rounded-lg text-[9px] font-black uppercase">Salir</button>
         </header>
 
-        <div class="p-5 bg-[#2a2121]/40 m-3 rounded-3xl border border-red-500/10">
-            <p class="text-[10px] font-black text-red-500 uppercase mb-3 flex items-center gap-2"><span>🚩</span> CENTRO DE DENUNCIAS</p>
-            <div class="flex flex-col gap-2">
-                <input type="text" id="rep-id" placeholder="ID DEL INFRACTOR (ZEN-XXXX)" class="bg-[#111b21] text-[10px] p-3 rounded-xl outline-none uppercase border border-white/5 focus:border-red-500/50">
-                <textarea id="rep-reason" placeholder="MOTIVO DEL REPORTE..." class="bg-[#111b21] text-[10px] p-3 rounded-xl outline-none border border-white/5 h-16 resize-none focus:border-red-500/50"></textarea>
-                <button onclick="sendReport()" class="bg-red-600 text-white p-3 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-red-900/20 active:scale-95 transition-all">Enviar Reporte</button>
-            </div>
-        </div>
-
-        <div class="p-5 bg-[#1c282f] mx-3 rounded-3xl border border-yellow-500/10">
-            <p class="text-[10px] font-black text-yellow-500 uppercase mb-3 flex items-center gap-2"><span>💎</span> ACTIVAR VERIFICADO</p>
+        <div class="p-4 bg-[#111b21] border-b border-white/5">
             <div class="flex gap-2">
-                <input type="text" id="promo-code" placeholder="CÓDIGO (123-ABC-123)" class="flex-1 bg-[#111b21] text-[10px] p-3 rounded-xl outline-none uppercase border border-white/5 focus:border-yellow-500/50">
-                <button onclick="redeemSerial()" class="bg-yellow-500 text-black px-5 rounded-xl text-[10px] font-black uppercase active:scale-90 transition-all">OK</button>
+                <input type="text" id="user-search" placeholder="BUSCAR ID (ZEN-XXXX)" class="flex-1 bg-[#2a3942] p-3 rounded-xl text-xs outline-none text-white focus:ring-1 ring-[#00a884]">
+                <button onclick="searchUser()" class="bg-[#00a884] text-black px-4 rounded-xl font-black text-[10px]">BUSCAR</button>
             </div>
         </div>
 
-        <div id="chats-list" class="flex-1 overflow-y-auto p-2"></div>
+        <div class="flex-1 overflow-y-auto p-2">
+            <div id="search-result" class="hidden mb-4 p-4 bg-[#202c33] rounded-2xl border border-[#00a884]/30 flex justify-between items-center"></div>
+            
+            <div class="p-4 bg-red-600/5 rounded-3xl border border-red-500/10 mb-2">
+                <input type="text" id="rep-id" placeholder="ID INFRACTOR" class="w-full bg-[#111b21] p-2 rounded-lg text-[10px] outline-none mb-2 border border-white/5">
+                <button onclick="sendReport()" class="w-full bg-red-600 text-white p-2 rounded-lg text-[9px] font-black uppercase">Reportar</button>
+            </div>
+
+            <div class="p-4 bg-[#1c282f] rounded-3xl border border-yellow-500/10 mb-4">
+                <input type="text" id="promo-code" placeholder="CÓDIGO VERIFICADO" class="w-full bg-[#111b21] p-2 rounded-lg text-[10px] outline-none mb-2 border border-white/5">
+                <button onclick="redeemSerial()" class="w-full bg-yellow-500 text-black p-2 rounded-lg text-[9px] font-black uppercase">Activar</button>
+            </div>
+
+            <div id="chats-list" class="space-y-1"></div>
+        </div>
       </aside>
 
       <main class="flex-1 flex flex-col chat-wallpaper relative">
-        <div id="game-container" class="hidden absolute inset-0 bg-[#0b141a]/95 backdrop-blur-xl z-[60] flex flex-col items-center justify-center">
-            <div class="text-center z-10">
-                <h2 class="text-5xl font-black text-[#00a884] italic mb-2">ZEN-CLICKER</h2>
-                <div class="text-6xl font-black text-white mb-6" id="game-score">0</div>
-                <button onclick="toggleGame()" class="bg-red-600 px-10 py-4 rounded-2xl font-black uppercase shadow-xl hover:scale-105 transition-all">Cerrar Juego</button>
+        <div id="game-container" class="hidden absolute inset-0 bg-[#0b141a]/98 z-[100] flex flex-col items-center justify-center">
+            <div class="absolute top-10 text-center pointer-events-none">
+                <h2 class="text-4xl font-black text-[#00a884] italic">ZEN-CLICKER PRO</h2>
+                <p class="text-6xl font-black text-white" id="game-score">0</p>
             </div>
-            <div id="game-area" class="absolute inset-0 cursor-crosshair"></div>
+            <div id="game-area" class="w-full h-full relative"></div>
+            <button onclick="toggleGame()" class="absolute bottom-10 bg-red-600 px-8 py-3 rounded-2xl font-black">CERRAR JUEGO</button>
         </div>
 
-        <div id="no-chat" class="flex-1 flex flex-col items-center justify-center text-slate-500 font-black text-[12px] uppercase tracking-[0.8em] opacity-20">
-            <span class="text-6xl mb-4">ZEN</span>
-            PROCESADOR SEGURO
-        </div>
+        <div id="no-chat" class="flex-1 flex items-center justify-center text-slate-600 font-black text-xs tracking-[0.5em]">SELECCIONA UN CONTACTO</div>
         
         <div id="active-chat" class="hidden flex-1 flex flex-col h-full animate-fade-in">
-            <header class="p-5 bg-[#202c33] flex items-center justify-between border-l border-white/5 shadow-2xl">
-                <div class="flex items-center gap-4">
-                    <div id="target-avatar-ui" class="w-12 h-12"></div>
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <span id="target-name" class="font-bold text-white text-lg"></span>
-                            <span id="target-badges" class="flex gap-1"></span>
-                        </div>
-                        <span id="target-id" class="text-[10px] text-[#00a884] font-black tracking-widest uppercase"></span>
-                    </div>
+            <header class="p-5 bg-[#202c33] flex items-center gap-4 shadow-2xl border-l border-white/5">
+                <div id="target-avatar-ui" class="w-12 h-12"></div>
+                <div>
+                    <div class="flex items-center gap-1"><span id="target-name" class="font-bold text-white text-lg"></span><span id="target-badges"></span></div>
+                    <span id="target-id" class="text-[10px] text-[#00a884] font-black"></span>
                 </div>
             </header>
-            <div id="messages-flow" class="flex-1 p-8 overflow-y-auto flex flex-col gap-4"></div>
-            <div class="p-6 bg-[#202c33] flex gap-4 border-t border-white/5">
-                <input type="text" id="msg-input" placeholder="Escribe un mensaje encriptado..." class="flex-1 p-4 bg-[#2a3942] rounded-2xl outline-none text-white text-sm shadow-inner">
-                <button onclick="sendMsg()" class="bg-[#00a884] text-black font-black px-8 rounded-2xl text-xs uppercase shadow-lg shadow-green-900/20">Enviar</button>
+            <div id="messages-flow" class="flex-1 p-8 overflow-y-auto flex flex-col gap-3"></div>
+            <div class="p-6 bg-[#202c33] flex gap-4">
+                <input type="text" id="msg-input" placeholder="Mensaje..." class="flex-1 p-4 bg-[#2a3942] rounded-2xl outline-none text-white shadow-inner" onkeypress="if(event.key==='Enter') sendMsg()">
+                <button onclick="sendMsg()" class="bg-[#00a884] text-black font-black px-10 rounded-2xl uppercase">Enviar</button>
             </div>
         </div>
       </main>
     </div>
 
-    <div id="admin-modal" class="hidden fixed inset-0 bg-[#0b141a] z-[1000] flex flex-col p-8 overflow-hidden">
-        <header class="flex justify-between items-end mb-10 border-b border-white/5 pb-8">
-            <div>
-                <div class="flex items-center gap-3 mb-1">
-                    <span class="bg-[#00a884] text-[#111b21] text-[10px] font-black px-2 py-0.5 rounded">V4.0</span>
-                    <h2 class="text-[#00a884] font-black text-5xl uppercase italic tracking-tighter">NÚCLEO MAESTRO</h2>
-                </div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-[0.4em]">Panel de Control y Seguridad de ZenApp</p>
-            </div>
-            
+    <div id="admin-modal" class="hidden fixed inset-0 bg-[#0b141a] z-[3000] p-10 flex flex-col overflow-hidden">
+        <header class="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+            <h2 class="text-[#00a884] font-black text-5xl uppercase italic tracking-tighter">CENTRO DE MANDO</h2>
             <div class="flex gap-4">
-                <div class="flex gap-8 px-8 py-3 bg-[#111b21] rounded-2xl border border-white/5 mr-4">
-                    <div class="text-center"><p class="text-[9px] text-slate-500 font-bold uppercase">Usuarios</p><p id="stat-u" class="text-xl font-black text-white">0</p></div>
-                    <div class="text-center"><p class="text-[9px] text-slate-500 font-bold uppercase">Baneos</p><p id="stat-b" class="text-xl font-black text-red-500">0</p></div>
-                    <div class="text-center"><p class="text-[9px] text-slate-500 font-bold uppercase">Reportes</p><p id="stat-r" class="text-xl font-black text-orange-500">0</p></div>
+                <div class="bg-black/50 px-6 py-2 rounded-2xl border border-white/5 text-center">
+                    <p class="text-[8px] text-slate-500 font-bold">USUARIOS</p>
+                    <p id="stat-u" class="text-xl font-black">0</p>
                 </div>
-                <button id="maint-btn" onclick="toggleMaint()" class="px-8 py-4 rounded-2xl text-[10px] font-black uppercase transition-all shadow-lg"></button>
-                <button onclick="closeAdmin()" class="bg-white/5 hover:bg-white/10 px-8 py-4 rounded-2xl text-[10px] text-white font-black uppercase transition-all">Desconectar</button>
+                <button onclick="toggleMaint()" id="maint-btn" class="px-8 py-3 rounded-xl font-black text-[10px] uppercase transition-all"></button>
+                <button onclick="closeAdmin()" class="bg-white/10 px-8 py-3 rounded-xl font-black text-[10px] uppercase">CERRAR</button>
             </div>
         </header>
-        
-        <div class="flex gap-8 h-full overflow-hidden">
-            <div class="flex-1 flex flex-col min-w-0">
-                <div class="flex items-center justify-between mb-4 px-2">
-                    <h3 class="text-white font-black text-sm uppercase tracking-widest">Base de Datos de Usuarios</h3>
-                    <span class="text-[10px] text-slate-500 uppercase">Haz clic en los campos para editar</span>
-                </div>
-                <div class="flex-1 overflow-y-auto pr-4 space-y-3" id="admin-list">
-                    </div>
-            </div>
-            
-            <div class="w-96 bg-[#111b21] rounded-[40px] border border-red-500/20 flex flex-col overflow-hidden shadow-2xl">
-                <div class="p-6 bg-red-600/10 border-b border-red-500/20">
-                    <h3 class="text-red-500 font-black text-sm uppercase tracking-tighter flex items-center gap-2">
-                        <span class="animate-pulse">🔴</span> TERMINAL DE ALERTAS
-                    </h3>
-                </div>
-                <div id="report-list" class="flex-1 overflow-y-auto p-4 space-y-4">
-                    </div>
+        <div class="flex gap-10 h-full overflow-hidden">
+            <div id="admin-list" class="flex-1 overflow-y-auto space-y-4 pr-4"></div>
+            <div class="w-96 bg-black/40 rounded-[40px] border border-red-500/20 p-6 flex flex-col">
+                <h3 class="text-red-500 font-black text-xs uppercase mb-4">🚨 REPORTES ACTIVOS</h3>
+                <div id="report-list" class="flex-1 overflow-y-auto space-y-3"></div>
             </div>
         </div>
     </div>
   </div>
 
 <script>
-// --- CORE CONFIG ---
+// --- CONFIG & DATA ---
 const MASTER_KEY = "ZM_X99_ROOT_#SECURITY_2026";
 const MASTER_ID = "123-abc";
-const ICONS = {
-    gold: '<svg class="w-5 h-5 v-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.64.304 1.24.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>',
-    blue: '<svg class="w-5 h-5 v-blue" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293l-4 4a1 1 0 01-1.414 0l-2-2a1 1 0 111.414-1.414L9 10.586l3.293-3.293a1 1 0 111.414 1.414z"></path></svg>',
-    green: '<svg class="w-5 h-5 v-green" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"></path></svg>'
-};
+const ICONS = { gold: '<span class="v-gold text-sm">★</span>', blue: '<span class="text-blue-500 text-sm">✔</span>', green: '<span class="text-green-500 text-sm">🛡</span>' };
 
 let users = JSON.parse(localStorage.getItem('zen_u')) || [];
-let reports = JSON.parse(localStorage.getItem('zen_reps')) || [];
 let messages = JSON.parse(localStorage.getItem('zen_m')) || [];
+let reports = JSON.parse(localStorage.getItem('zen_reps')) || [];
 let maint = JSON.parse(localStorage.getItem('zen_mt')) || false;
-let me = null, score = 0, talkingTo = null;
+let me = null, talkingTo = null, score = 0;
 
 if (!users.find(u => u.id === MASTER_ID)) {
     users.push({ id: MASTER_ID, name: "Admin", pass: "root", badges: {gold:true}, photo: "https://ui-avatars.com/api/?name=Admin&background=00a884&color=fff", isBan: false });
@@ -172,108 +159,104 @@ save();
 
 function save() {
     localStorage.setItem('zen_u', JSON.stringify(users));
-    localStorage.setItem('zen_reps', JSON.stringify(reports));
     localStorage.setItem('zen_m', JSON.stringify(messages));
+    localStorage.setItem('zen_reps', JSON.stringify(reports));
     localStorage.setItem('zen_mt', JSON.stringify(maint));
 }
 
-// --- INNOVATIVE ADMIN FUNCTIONS ---
-function renderAdmin() {
-    // Update Stats
-    document.getElementById('stat-u').innerText = users.length;
-    document.getElementById('stat-b').innerText = users.filter(u => u.isBan).length;
-    document.getElementById('stat-r').innerText = reports.length;
-    
-    // Update Maint Button
-    const mb = document.getElementById('maint-btn');
-    mb.innerText = maint ? "SISTEMA CERRADO" : "SISTEMA ABIERTO";
-    mb.className = maint ? "bg-red-600 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase" : "bg-[#00a884] text-[#111b21] px-8 py-4 rounded-2xl text-[10px] font-black uppercase";
+// --- INSTANT MESSAGING ---
+function sendMsg() {
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if(!text || !talkingTo) return;
 
-    // Render User Table
-    document.getElementById('admin-list').innerHTML = users.map(u => `
-        <div class="admin-card p-5 rounded-3xl flex items-center justify-between group hover:border-[#00a884]/30 transition-all">
-            <div class="flex items-center gap-5">
-                <div class="relative">
-                    <img src="${u.photo}" class="w-14 h-14 rounded-full border-2 ${u.id===MASTER_ID?'border-yellow-500':'border-white/10'}">
-                    ${u.isBan ? '<div class="absolute inset-0 bg-red-600/40 rounded-full flex items-center justify-center text-xs font-black">BAN</div>' : ''}
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <input onchange="editU('${u.id}','name',this.value)" value="${u.name}" class="bg-transparent text-white font-black outline-none border-b border-transparent focus:border-[#00a884] w-32">
-                        <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">${u.id}</span>
-                    </div>
-                    <input onchange="editU('${u.id}','pass',this.value)" value="${u.pass}" class="bg-transparent text-[10px] text-[#00a884] font-bold outline-none block">
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-8">
-                <div class="flex gap-4">
-                    <button onclick="tg('${u.id}','gold')" class="${u.badges?.gold?'text-yellow-500':'text-white/10'} hover:scale-125 transition-all">${ICONS.gold}</button>
-                    <button onclick="tg('${u.id}','green')" class="${u.badges?.green?'text-green-500':'text-white/10'} hover:scale-125 transition-all">${ICONS.green}</button>
-                    <button onclick="tg('${u.id}','blue')" class="${u.badges?.blue?'text-blue-500':'text-white/10'} hover:scale-125 transition-all">${ICONS.blue}</button>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="ban('${u.id}',true)" class="bg-white/5 hover:bg-red-600 hover:text-white text-red-500 text-[9px] font-black px-4 py-2 rounded-xl transition-all uppercase">Ban</button>
-                    <button onclick="ban('${u.id}',false)" class="bg-white/5 hover:bg-green-600 hover:text-white text-green-500 text-[9px] font-black px-4 py-2 rounded-xl transition-all uppercase">Unban</button>
-                </div>
+    const newMsg = { from: me.id, to: talkingTo, text: text, time: Date.now() };
+    messages.push(newMsg);
+    input.value = "";
+    save();
+    
+    // RENDER INMEDIATO
+    renderMsgs(); 
+    renderChats();
+}
+
+function renderMsgs() {
+    const flow = document.getElementById('messages-flow');
+    const conv = messages.filter(m => (m.from === me.id && m.to === talkingTo) || (m.from === talkingTo && m.to === me.id));
+    flow.innerHTML = conv.map(m => `
+        <div class="flex flex-col ${m.from === me.id ? 'items-end' : 'items-start'}">
+            <div class="${m.from === me.id ? 'bg-[#005c4b]' : 'bg-[#202c33]'} p-4 rounded-2xl max-w-[75%] text-white shadow-lg animate-scale-in">
+                ${m.text}
             </div>
         </div>
     `).join('');
-
-    // Render Reports
-    document.getElementById('report-list').innerHTML = reports.map((r, i) => `
-        <div class="bg-black/50 p-5 rounded-3xl border-l-4 border-red-600 animate-pulse-subtle">
-            <div class="flex justify-between items-start mb-2">
-                <span class="text-red-500 text-[10px] font-black uppercase">ALERTA #${i+1}</span>
-                <button onclick="delRep(${i})" class="text-slate-600 hover:text-white text-[10px]">✕</button>
-            </div>
-            <p class="text-white text-xs font-bold mb-1">OBJETIVO: <span class="text-red-400">${r.target}</span></p>
-            <p class="text-slate-400 text-[11px] italic leading-tight mb-3">"${r.reason}"</p>
-            <div class="flex justify-between items-center border-t border-white/5 pt-3">
-                <span class="text-[9px] text-slate-600 font-bold uppercase">De: ${r.from}</span>
-                <button onclick="openChat('${r.target}')" class="text-[9px] text-[#00a884] font-black uppercase">Intervenir</button>
-            </div>
-        </div>
-    `).join('') || '<div class="h-full flex flex-col items-center justify-center opacity-20"><span class="text-4xl mb-2">🛡️</span><p class="text-[10px] font-black uppercase">Perímetro Seguro</p></div>';
+    flow.scrollTop = flow.scrollHeight;
 }
 
-function openAdminPanel() { if(prompt("CÓDIGO DE ACCESO MAESTRO:") === MASTER_KEY) { renderAdmin(); document.getElementById('admin-modal').classList.remove('hidden'); } }
-function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
-function toggleMaint() { maint = !maint; save(); renderAdmin(); }
-function editU(id,k,v) { let u = users.find(x=>x.id===id); if(u) u[k]=v; save(); renderAdmin(); }
-function ban(id,st) { if(id===MASTER_ID) return; let u = users.find(x=>x.id===id); u.isBan=st; save(); renderAdmin(); }
-function tg(id,t) { let u = users.find(x=>x.id===id); if(!u.badges) u.badges={}; u.badges[t]=!u.badges[t]; save(); renderAdmin(); }
-function delRep(i) { reports.splice(i, 1); save(); renderAdmin(); }
+// --- SEARCH USER ---
+function searchUser() {
+    const q = document.getElementById('user-search').value.trim().toUpperCase();
+    const res = document.getElementById('search-result');
+    const u = users.find(x => x.id === q);
+    
+    if(u && u.id !== me.id) {
+        res.classList.remove('hidden');
+        res.innerHTML = `
+            <div class="flex items-center gap-3">
+                <img src="${u.photo}" class="w-10 h-10 rounded-full">
+                <div><p class="text-white font-bold text-sm">${u.name}</p><p class="text-[10px] text-slate-500">${u.id}</p></div>
+            </div>
+            <button onclick="openChat('${u.id}')" class="bg-[#00a884] text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase">Abrir Chat</button>
+        `;
+    } else { alert("Usuario no encontrado"); res.classList.add('hidden'); }
+}
 
-// --- GAME LOGIC ---
+// --- ZENMAIL & GAME PRO ---
+function toggleMail() { document.getElementById('mail-modal').classList.toggle('hidden'); }
+
 function toggleGame() {
     const g = document.getElementById('game-container');
     g.classList.toggle('hidden');
-    if(!g.classList.contains('hidden')) spawnTarget();
-}
-function spawnTarget() {
-    const area = document.getElementById('game-area');
-    area.innerHTML = "";
-    const t = document.createElement('div');
-    t.className = "game-target";
-    t.style.top = Math.random() * 70 + 15 + "%";
-    t.style.left = Math.random() * 70 + 15 + "%";
-    t.onclick = (e) => {
-        e.stopPropagation();
-        score++;
-        document.getElementById('game-score').innerText = score;
-        spawnTarget();
-    };
-    area.appendChild(t);
+    if(!g.classList.contains('hidden')) spawnObject();
 }
 
-// --- BASIC AUTH & CHAT (MAINTAINED) ---
+function spawnObject() {
+    const area = document.getElementById('game-area');
+    area.innerHTML = "";
+    const rand = Math.random();
+    const obj = document.createElement('div');
+    obj.className = "game-target";
+    
+    if (rand > 0.8) { // Bonus Gold (+5)
+        obj.classList.add('target-bonus');
+        obj.innerHTML = "⭐";
+        obj.onclick = () => { score += 5; updateScore(); };
+    } else if (rand < 0.2) { // Danger Red (-3)
+        obj.classList.add('target-danger');
+        obj.innerHTML = "💀";
+        obj.onclick = () => { score -= 3; updateScore(); };
+    } else { // Normal (+1)
+        obj.classList.add('target-normal');
+        obj.innerHTML = "ZEN";
+        obj.onclick = () => { score += 1; updateScore(); };
+    }
+
+    obj.style.top = Math.random() * 70 + 15 + "%";
+    obj.style.left = Math.random() * 70 + 15 + "%";
+    area.appendChild(obj);
+    
+    // Auto-spawn si no se toca
+    setTimeout(() => { if(obj.parentNode === area) spawnObject(); }, 1200);
+}
+function updateScore() { document.getElementById('game-score').innerText = score; spawnObject(); }
+
+// --- ADMIN & AUTH (MANTENIDO) ---
 function auth() {
     const u = document.getElementById('login-user').value.trim();
     const p = document.getElementById('login-pass').value.trim();
     if(!u || !p) return;
     let found = users.find(x => x.name.toLowerCase() === u.toLowerCase() && x.pass === p);
-    if(found) { if(found.isBan) return; me = found; } 
+    if(found) { if(found.isBan) return alert("BANEADO"); me = found; }
     else { me = { id: "ZEN-"+Math.floor(1000+Math.random()*9000), name: u, pass: p, badges: {}, photo: "https://ui-avatars.com/api/?name="+u+"&background=random&color=fff", isBan: false }; users.push(me); }
     save();
     document.getElementById('login-screen').classList.add('hidden');
@@ -284,28 +267,9 @@ function auth() {
     renderChats();
 }
 
-function sendReport() {
-    const id = document.getElementById('rep-id').value.trim().toUpperCase();
-    const reason = document.getElementById('rep-reason').value.trim();
-    if(!id || !reason) return;
-    reports.push({ from: me.id, target: id, reason: reason });
-    save();
-    alert("REPORTE ENVIADO");
-    document.getElementById('rep-id').value = ""; document.getElementById('rep-reason').value = "";
-}
-
-function redeemSerial() {
-    const s = document.getElementById('promo-code').value.trim().toUpperCase();
-    if (/^\d{3}-[A-Z]{3}-\d{3}$/.test(s)) {
-        let uNow = users.find(x => x.id === me.id);
-        uNow.badges = {gold:true}; save(); alert("✅ SERIAL VÁLIDO");
-    }
-}
-
 function openChat(id) {
     talkingTo = id;
     const u = users.find(x => x.id === id);
-    if(!u) return;
     document.getElementById('no-chat').classList.add('hidden');
     document.getElementById('active-chat').classList.remove('hidden');
     document.getElementById('target-name').innerText = u.name;
@@ -315,41 +279,79 @@ function openChat(id) {
     renderMsgs();
 }
 
-function sendMsg() {
-    const i = document.getElementById('msg-input');
-    if(!i.value.trim()) return;
-    messages.push({ from: me.id, to: talkingTo, text: i.value.trim() });
-    i.value = ""; save(); renderMsgs();
-}
-
-function renderMsgs() {
-    const flow = document.getElementById('messages-flow');
-    const conv = messages.filter(m => (m.from === me.id && m.to === talkingTo) || (m.from === talkingTo && m.to === me.id));
-    flow.innerHTML = conv.map(m => `<div class="flex flex-col ${m.from === me.id ? 'items-end' : 'items-start'}"><div class="${m.from === me.id ? 'bg-[#005c4b]' : 'bg-[#202c33]'} p-4 rounded-2xl max-w-[70%] text-sm text-white shadow-lg">${m.text}</div></div>`).join('');
-    flow.scrollTop = flow.scrollHeight;
-}
-
 function renderChats() {
     const list = document.getElementById('chats-list');
     const contacts = [...new Set(messages.filter(m => m.to === me.id || m.from === me.id).map(m => m.from === me.id ? m.to : m.from))];
     list.innerHTML = contacts.map(cid => {
         const u = users.find(x => x.id === cid);
         if(!u) return '';
-        return `<div onclick="openChat('${u.id}')" class="p-4 flex items-center gap-4 hover:bg-[#202c33] cursor-pointer rounded-2xl transition-all mb-1 ${talkingTo === u.id ? 'bg-[#202c33] border-l-4 border-[#00a884]' : ''}"><img src="${u.photo}" class="w-12 h-12 rounded-full border border-white/5"><div><p class="text-white font-bold flex items-center gap-1">${u.name} ${getBadges(u)}</p><p class="text-[10px] text-slate-500 font-black uppercase tracking-widest">${u.id}</p></div></div>`;
+        return `<div onclick="openChat('${u.id}')" class="p-4 flex items-center gap-4 hover:bg-[#202c33] cursor-pointer rounded-2xl transition-all ${talkingTo === u.id ? 'bg-[#202c33] border-l-4 border-[#00a884]' : ''}"><img src="${u.photo}" class="w-12 h-12 rounded-full"><div><p class="text-white font-bold text-sm">${u.name} ${getBadges(u)}</p><p class="text-[10px] text-slate-500 uppercase">${u.id}</p></div></div>`;
     }).join('');
 }
 
+function renderAdmin() {
+    document.getElementById('stat-u').innerText = users.length;
+    const mb = document.getElementById('maint-btn');
+    mb.innerText = maint ? "SISTEMA CERRADO" : "SISTEMA ABIERTO";
+    mb.className = maint ? "bg-red-600 text-white" : "bg-[#00a884] text-black";
+    
+    document.getElementById('admin-list').innerHTML = users.map(u => `
+        <div class="bg-[#202c33] p-5 rounded-3xl flex justify-between items-center border border-white/5 hover:border-[#00a884]/40 transition-all">
+            <div class="flex items-center gap-4">
+                <img src="${u.photo}" class="w-12 h-12 rounded-full border-2 ${u.id===MASTER_ID?'border-yellow-500':'border-white/10'}">
+                <div>
+                    <input onchange="editU('${u.id}','name',this.value)" value="${u.name}" class="bg-transparent text-white font-black outline-none border-b border-[#00a884]/30 w-32">
+                    <p class="text-[10px] text-slate-500">${u.id}</p>
+                    <input onchange="editU('${u.id}','pass',this.value)" value="${u.pass}" class="bg-transparent text-[8px] text-[#00a884] outline-none w-32">
+                </div>
+            </div>
+            <div class="flex gap-4 items-center">
+                <div class="flex gap-2">
+                    <button onclick="tg('${u.id}','gold')" class="${u.badges?.gold?'v-gold':'opacity-20'} text-xl">★</button>
+                    <button onclick="tg('${u.id}','green')" class="${u.badges?.green?'text-green-500':'opacity-20'} text-xl">🛡</button>
+                </div>
+                <button onclick="ban('${u.id}',${!u.isBan})" class="${u.isBan?'bg-green-600':'bg-red-600'} text-white text-[9px] px-4 py-2 rounded-xl font-black uppercase">${u.isBan?'Unban':'Ban'}</button>
+            </div>
+        </div>
+    `).join('');
+
+    document.getElementById('report-list').innerHTML = reports.map((r, i) => `
+        <div class="p-4 bg-black/40 rounded-2xl border-l-4 border-red-500">
+            <p class="text-[10px] font-black text-red-500 uppercase">Reportado: ${r.target}</p>
+            <p class="text-xs text-slate-400 italic mt-1">"${r.reason}"</p>
+            <button onclick="delRep(${i})" class="text-[8px] text-white/20 mt-2 uppercase">Cerrar Caso</button>
+        </div>
+    `).join('');
+}
+
+function openAdminPanel() { if(prompt("MASTER KEY:") === MASTER_KEY) { renderAdmin(); document.getElementById('admin-modal').classList.remove('hidden'); } }
+function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
+function toggleMaint() { maint = !maint; save(); renderAdmin(); }
+function editU(id,k,v) { let u = users.find(x=>x.id===id); if(u) u[k]=v; save(); }
+function ban(id,st) { if(id===MASTER_ID) return; let u = users.find(x=>x.id===id); u.isBan=st; save(); renderAdmin(); }
+function tg(id,t) { let u = users.find(x=>x.id===id); if(!u.badges) u.badges={}; u.badges[t]=!u.badges[t]; save(); renderAdmin(); }
+function delRep(i) { reports.splice(i,1); save(); renderAdmin(); }
+function sendReport() {
+    const id = document.getElementById('rep-id').value.trim().toUpperCase();
+    if(!id) return;
+    reports.push({ from: me.id, target: id, reason: "Denuncia de usuario" });
+    save(); alert("REPORTE ENVIADO");
+}
+function redeemSerial() {
+    const s = document.getElementById('promo-code').value.trim().toUpperCase();
+    if (/^\d{3}-[A-Z]{3}-\d{3}$/.test(s)) {
+        let uNow = users.find(x => x.id === me.id);
+        uNow.badges = {gold:true}; save(); alert("✅ SERIAL VÁLIDO");
+    }
+}
 function getBadges(u) { if(!u || !u.badges) return ''; return (u.badges.gold?ICONS.gold:'')+(u.badges.green?ICONS.green:'')+(u.badges.blue?ICONS.blue:''); }
 
 setInterval(() => {
     if(!me) return;
     const cur = users.find(x=>x.id===me.id);
     if(me.id !== MASTER_ID && (maint || cur.isBan)) {
-        document.getElementById('lock-screen').classList.remove('hidden');
-        document.getElementById('lock-msg').innerText = cur.isBan ? "NÚCLEO BLOQUEADO POR BAN" : "NÚCLEO EN MANTENIMIENTO";
-    } else { document.getElementById('lock-screen').classList.add('hidden'); }
-    document.getElementById('my-badges').innerHTML = getBadges(cur);
-    renderChats();
+        document.body.innerHTML = `<div class="h-screen bg-black flex items-center justify-center text-red-600 font-black text-4xl uppercase italic">SISTEMA CERRADO / BANEADO</div>`;
+    }
 }, 3000);
 </script>
 </body>
