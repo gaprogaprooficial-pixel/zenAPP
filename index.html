@@ -1,36 +1,44 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   .chat-wallpaper { background-color: #0b141a; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-opacity: 0.05; }
-  .v-gold { color: #facc15; filter: drop-shadow(0 0 4px #facc15); }
-  .game-target { position: absolute; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: transform 0.1s; }
-  .target-normal { background: radial-gradient(circle, #00ffcc, #00a884); box-shadow: 0 0 15px #00a884; }
-  .target-bonus { background: radial-gradient(circle, #facc15, #eab308); box-shadow: 0 0 20px #facc15; animation: ping 1s infinite; }
-  .target-danger { background: radial-gradient(circle, #ef4444, #991b1b); box-shadow: 0 0 15px #ef4444; }
-  .zen-mail-window { background: #0b141a; border: 1px solid rgba(0, 168, 132, 0.2); box-shadow: 0 0 40px rgba(0,0,0,0.8); }
+  
+  /* VERIFICADOS BLINDADOS (Incopiables) */
+  .badge-core { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 4px; margin-left: 4px; vertical-align: middle; pointer-events: none; user-select: none; }
+  .v-admin { background: linear-gradient(135deg, #ffcc00, #ff9900); box-shadow: 0 0 8px #ffcc00; position: relative; }
+  .v-admin::after { content: '★'; color: white; font-size: 12px; font-weight: bold; }
+  .v-vip { background: linear-gradient(135deg, #22c55e, #15803d); box-shadow: 0 0 8px #22c55e; }
+  .v-vip::after { content: '🛡'; color: white; font-size: 10px; }
+  .v-user { background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 0 8px #3b82f6; }
+  .v-user::after { content: '✓'; color: white; font-size: 11px; font-weight: bold; }
+
+  .game-target { position: absolute; width: 65px; height: 65px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 900; transition: transform 0.1s active:scale-90; }
+  .target-normal { background: radial-gradient(circle, #00ffcc, #00a884); box-shadow: 0 0 20px #00a884; color: #111b21; }
+  .target-bonus { background: radial-gradient(circle, #facc15, #eab308); box-shadow: 0 0 25px #facc15; animation: pulse 0.5s infinite; color: black; }
+  .target-danger { background: radial-gradient(circle, #ef4444, #7f1d1d); box-shadow: 0 0 20px #ef4444; color: white; }
 </style>
 
 <body class="bg-[#111b21] font-sans text-slate-200 overflow-hidden">
 
-  <div id="mail-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
-      <div class="zen-mail-window w-full max-w-4xl h-[600px] rounded-[30px] flex flex-col overflow-hidden border-t-4 border-[#00a884]">
-          <header class="p-6 bg-[#202c33] flex justify-between items-center">
-              <div class="flex items-center gap-3">
-                  <span class="text-3xl">📧</span>
-                  <h2 class="text-2xl font-black italic tracking-tighter text-[#00a884]">ZENMAIL PRO</h2>
-              </div>
-              <button onclick="toggleMail()" class="bg-red-500/20 text-red-500 px-4 py-2 rounded-xl font-bold">CERRAR</button>
+  <div id="mail-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 backdrop-blur-xl bg-black/70">
+      <div class="bg-[#0b141a] w-full max-w-4xl h-[600px] rounded-[40px] flex flex-col overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,168,132,0.2)]">
+          <header class="p-8 bg-[#202c33] flex justify-between items-center">
+              <div class="flex items-center gap-4"><span class="text-4xl">📧</span><h2 class="text-3xl font-black italic text-[#00a884] tracking-tighter">ZENMAIL ENCRYPT</h2></div>
+              <button onclick="toggleMail()" class="bg-white/5 hover:bg-red-600 text-white px-8 py-3 rounded-2xl font-black transition-all">CERRAR</button>
           </header>
-          <div class="flex flex-1 overflow-hidden">
-              <aside class="w-64 bg-black/20 p-4 border-r border-white/5 space-y-2">
-                  <button class="w-full bg-[#00a884] text-black font-black p-3 rounded-xl text-xs uppercase">Redactar</button>
-                  <div class="p-3 text-[#00a884] font-bold text-xs bg-[#00a884]/10 rounded-xl">Bandeja de Entrada</div>
-                  <div class="p-3 text-slate-500 font-bold text-xs hover:bg-white/5 rounded-xl cursor-not-allowed">Enviados</div>
+          <div class="flex flex-1">
+              <aside class="w-72 bg-black/30 p-6 border-r border-white/5 flex flex-col gap-4">
+                  <div class="p-4 bg-[#00a884] text-black rounded-2xl font-black text-center text-xs uppercase cursor-pointer">Nuevo Mensaje</div>
+                  <div class="space-y-1">
+                      <div class="p-3 bg-white/5 rounded-xl text-[#00a884] text-xs font-bold">Bandeja de Entrada (1)</div>
+                      <div class="p-3 hover:bg-white/5 rounded-xl text-slate-500 text-xs font-bold transition-all">Spam / Sistema</div>
+                  </div>
               </aside>
-              <main class="flex-1 p-6 overflow-y-auto space-y-4 bg-[#111b21]">
-                  <div class="p-4 bg-[#202c33] rounded-2xl border-l-4 border-[#00a884]">
-                      <p class="text-[10px] text-[#00a884] font-bold">SISTEMA @ ZENAPP</p>
-                      <h3 class="font-bold text-white">Bienvenido a ZenMail</h3>
-                      <p class="text-sm text-slate-400 mt-2">Tu buzón de comunicaciones cifradas está activo. Los mensajes se auto-destruyen en 24h.</p>
+              <main class="flex-1 p-10 overflow-y-auto">
+                  <div class="bg-[#202c33] p-8 rounded-[30px] border border-white/5 relative overflow-hidden">
+                      <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl font-black">ZEN</div>
+                      <h4 class="text-[#00a884] font-black text-xs uppercase mb-2">De: Admin Central</h4>
+                      <h3 class="text-xl font-bold mb-4">Protocolo de Privacidad 2026</h3>
+                      <p class="text-slate-400 text-sm leading-relaxed">Bienvenido a la red privada. Tus mensajes en ZenMail están protegidos por cifrado de extremo a extremo. Nadie, ni siquiera los moderadores, pueden leer tus correos privados.</p>
                   </div>
               </main>
           </div>
@@ -39,112 +47,142 @@
 
   <div id="app">
     <div id="login-screen" class="h-screen flex flex-col items-center justify-center">
-      <h1 class="text-7xl font-black text-[#00a884] mb-8 uppercase italic tracking-tighter">ZENAPP</h1>
-      <div class="bg-[#222e35] p-10 rounded-[40px] w-[400px] shadow-2xl">
-        <input type="text" id="login-user" placeholder="Usuario" class="w-full p-4 bg-[#2a3942] rounded-2xl outline-none mb-4 text-white">
-        <input type="password" id="login-pass" placeholder="Contraseña" class="w-full p-4 bg-[#2a3942] rounded-2xl outline-none mb-8 text-white">
-        <button onclick="auth()" class="w-full bg-[#00a884] py-5 rounded-2xl font-black text-[#111b21] uppercase text-lg shadow-lg">ENTRAR</button>
+      <h1 class="text-8xl font-black text-[#00a884] mb-10 italic tracking-tighter drop-shadow-2xl">ZENAPP</h1>
+      <div class="bg-[#222e35] p-12 rounded-[50px] w-[450px] shadow-2xl border-b-8 border-[#00a884]">
+        <input type="text" id="login-user" placeholder="Nombre de Usuario" class="w-full p-5 bg-[#2a3942] rounded-2xl outline-none mb-4 text-white placeholder-slate-500 focus:ring-2 ring-[#00a884] transition-all">
+        <input type="password" id="login-pass" placeholder="Contraseña" class="w-full p-5 bg-[#2a3942] rounded-2xl outline-none mb-8 text-white placeholder-slate-500 focus:ring-2 ring-[#00a884] transition-all">
+        <button onclick="auth()" class="w-full bg-[#00a884] py-6 rounded-3xl font-black text-[#111b21] uppercase text-xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all">ENTRAR AL NÚCLEO</button>
       </div>
     </div>
 
     <div id="chat-interface" class="hidden h-screen flex bg-[#111b21]">
-      <aside class="w-[420px] border-r border-white/5 flex flex-col bg-[#111b21]">
+      <aside class="w-[450px] border-r border-white/5 flex flex-col bg-[#111b21]">
         
-        <header class="p-5 bg-[#202c33] flex justify-between items-center shadow-xl">
+        <header class="p-6 bg-[#202c33] flex justify-between items-center shadow-2xl">
             <div class="flex items-center gap-4">
-                <img id="my-avatar" onclick="openAdminPanel()" class="w-14 h-14 rounded-full cursor-pointer border-2 border-[#00a884]">
-                <div class="flex flex-col gap-1">
-                    <button onclick="toggleGame()" class="bg-[#2a3942] p-2 rounded-xl text-lg" title="Juegos">🎮</button>
-                    <button onclick="toggleMail()" class="bg-[#2a3942] p-2 rounded-xl text-lg" title="ZenMail">📧</button>
+                <div class="relative">
+                    <img id="my-avatar" onclick="openAdminPanel()" class="w-16 h-16 rounded-full cursor-pointer border-2 border-[#00a884] hover:brightness-125 transition-all">
+                    <div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-4 border-[#202c33]"></div>
                 </div>
                 <div>
-                    <p id="my-name-display" class="font-bold text-white"></p>
-                    <p id="my-id-display" class="text-[10px] text-[#00a884] font-black tracking-widest"></p>
+                    <div class="flex items-center">
+                        <p id="my-name-display" class="font-black text-white text-lg"></p>
+                        <span id="my-badges" class="flex"></span>
+                    </div>
+                    <p id="my-id-display" class="text-[10px] text-[#00a884] font-black tracking-[0.2em] uppercase"></p>
                 </div>
             </div>
-            <button onclick="location.reload()" class="bg-red-500/10 text-red-500 p-2 rounded-lg text-[9px] font-black uppercase">Salir</button>
+            <div class="flex gap-2">
+                <button onclick="toggleGame()" class="bg-[#2a3942] w-10 h-10 rounded-xl flex items-center justify-center hover:bg-[#00a884] hover:text-black transition-all">🎮</button>
+                <button onclick="toggleMail()" class="bg-[#2a3942] w-10 h-10 rounded-xl flex items-center justify-center hover:bg-[#00a884] hover:text-black transition-all">📧</button>
+            </div>
         </header>
 
-        <div class="p-4 bg-[#111b21] border-b border-white/5">
-            <div class="flex gap-2">
-                <input type="text" id="user-search" placeholder="BUSCAR ID (ZEN-XXXX)" class="flex-1 bg-[#2a3942] p-3 rounded-xl text-xs outline-none text-white focus:ring-1 ring-[#00a884]">
-                <button onclick="searchUser()" class="bg-[#00a884] text-black px-4 rounded-xl font-black text-[10px]">BUSCAR</button>
+        <div class="p-6 border-b border-white/5 bg-black/10">
+            <div class="flex gap-3">
+                <input type="text" id="user-search" placeholder="ID DEL USUARIO (ZEN-XXXX)" class="flex-1 bg-[#2a3942] p-4 rounded-2xl text-xs outline-none text-white focus:ring-1 ring-[#00a884]">
+                <button onclick="searchUser()" class="bg-white/5 hover:bg-white/10 px-6 rounded-2xl font-black text-[10px] uppercase transition-all">Buscar</button>
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-2">
-            <div id="search-result" class="hidden mb-4 p-4 bg-[#202c33] rounded-2xl border border-[#00a884]/30 flex justify-between items-center"></div>
-            
-            <div class="p-4 bg-red-600/5 rounded-3xl border border-red-500/10 mb-2">
-                <input type="text" id="rep-id" placeholder="ID INFRACTOR" class="w-full bg-[#111b21] p-2 rounded-lg text-[10px] outline-none mb-2 border border-white/5">
-                <button onclick="sendReport()" class="w-full bg-red-600 text-white p-2 rounded-lg text-[9px] font-black uppercase">Reportar</button>
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+            <div id="search-result" class="hidden p-4 bg-[#202c33] rounded-3xl border border-[#00a884]/30 animate-pulse-subtle"></div>
+
+            <div class="p-6 bg-[#1c282f] rounded-[35px] border border-yellow-500/10 shadow-xl">
+                <h4 class="text-yellow-500 font-black text-[10px] uppercase mb-3 flex items-center gap-2"><span>💎</span> UPGRADE DE CUENTA</h4>
+                <select id="shop-type" class="w-full bg-[#111b21] text-xs p-3 rounded-xl text-white mb-3 outline-none border border-white/10">
+                    <option value="gold">DORADO (ADMIN)</option>
+                    <option value="green">VERDE (VIP)</option>
+                    <option value="blue">AZUL (VERIFICADO)</option>
+                </select>
+                <div class="flex gap-2">
+                    <input type="text" id="promo-code" placeholder="CÓDIGO DE ACTIVACIÓN" class="flex-1 bg-[#111b21] text-[10px] p-3 rounded-xl outline-none uppercase border border-white/10">
+                    <button onclick="redeemSerial()" class="bg-yellow-500 text-black px-6 rounded-xl font-black text-[10px] uppercase">Activar</button>
+                </div>
             </div>
 
-            <div class="p-4 bg-[#1c282f] rounded-3xl border border-yellow-500/10 mb-4">
-                <input type="text" id="promo-code" placeholder="CÓDIGO VERIFICADO" class="w-full bg-[#111b21] p-2 rounded-lg text-[10px] outline-none mb-2 border border-white/5">
-                <button onclick="redeemSerial()" class="w-full bg-yellow-500 text-black p-2 rounded-lg text-[9px] font-black uppercase">Activar</button>
+            <div class="p-6 bg-red-900/10 rounded-[35px] border border-red-500/10">
+                <h4 class="text-red-500 font-black text-[10px] uppercase mb-3">🚩 CENTRO DE DENUNCIAS</h4>
+                <input type="text" id="rep-id" placeholder="ID DEL INFRACTOR" class="w-full bg-[#111b21] p-3 rounded-xl text-xs outline-none mb-3 border border-white/5 uppercase">
+                <button onclick="sendReport()" class="w-full bg-red-600 text-white p-3 rounded-xl font-black text-[10px] uppercase hover:bg-red-700 transition-all">Enviar Reporte</button>
             </div>
 
-            <div id="chats-list" class="space-y-1"></div>
+            <div id="chats-list" class="space-y-2 pt-4"></div>
         </div>
       </aside>
 
       <main class="flex-1 flex flex-col chat-wallpaper relative">
-        <div id="game-container" class="hidden absolute inset-0 bg-[#0b141a]/98 z-[100] flex flex-col items-center justify-center">
-            <div class="absolute top-10 text-center pointer-events-none">
-                <h2 class="text-4xl font-black text-[#00a884] italic">ZEN-CLICKER PRO</h2>
-                <p class="text-6xl font-black text-white" id="game-score">0</p>
+        <div id="game-container" class="hidden absolute inset-0 bg-[#0b141a]/95 z-[100] flex flex-col items-center justify-center">
+            <div class="absolute top-12 text-center select-none">
+                <h2 class="text-5xl font-black text-[#00a884] italic mb-2">ZEN-CLICKER PRO</h2>
+                <div class="text-7xl font-black text-white" id="game-score">0</div>
             </div>
-            <div id="game-area" class="w-full h-full relative"></div>
-            <button onclick="toggleGame()" class="absolute bottom-10 bg-red-600 px-8 py-3 rounded-2xl font-black">CERRAR JUEGO</button>
+            <div id="game-area" class="w-full h-full relative cursor-crosshair"></div>
+            <button onclick="toggleGame()" class="absolute bottom-12 bg-red-600 px-12 py-5 rounded-[25px] font-black uppercase text-sm shadow-2xl hover:bg-red-700 transition-all">CERRAR JUEGO</button>
         </div>
 
-        <div id="no-chat" class="flex-1 flex items-center justify-center text-slate-600 font-black text-xs tracking-[0.5em]">SELECCIONA UN CONTACTO</div>
+        <div id="no-chat" class="flex-1 flex flex-col items-center justify-center opacity-10 grayscale">
+            <span class="text-9xl mb-4">ZEN</span>
+            <p class="font-black text-xl tracking-[1em]">EN ESPERA</p>
+        </div>
         
-        <div id="active-chat" class="hidden flex-1 flex flex-col h-full animate-fade-in">
-            <header class="p-5 bg-[#202c33] flex items-center gap-4 shadow-2xl border-l border-white/5">
-                <div id="target-avatar-ui" class="w-12 h-12"></div>
-                <div>
-                    <div class="flex items-center gap-1"><span id="target-name" class="font-bold text-white text-lg"></span><span id="target-badges"></span></div>
-                    <span id="target-id" class="text-[10px] text-[#00a884] font-black"></span>
+        <div id="active-chat" class="hidden flex-1 flex flex-col h-full">
+            <header class="p-6 bg-[#202c33] flex items-center justify-between border-l border-white/5 shadow-2xl">
+                <div class="flex items-center gap-4">
+                    <div id="target-avatar-ui" class="w-14 h-14"></div>
+                    <div>
+                        <div class="flex items-center">
+                            <span id="target-name" class="font-black text-white text-xl"></span>
+                            <span id="target-badges" class="flex"></span>
+                        </div>
+                        <span id="target-id" class="text-xs text-[#00a884] font-black uppercase tracking-widest"></span>
+                    </div>
                 </div>
             </header>
-            <div id="messages-flow" class="flex-1 p-8 overflow-y-auto flex flex-col gap-3"></div>
-            <div class="p-6 bg-[#202c33] flex gap-4">
-                <input type="text" id="msg-input" placeholder="Mensaje..." class="flex-1 p-4 bg-[#2a3942] rounded-2xl outline-none text-white shadow-inner" onkeypress="if(event.key==='Enter') sendMsg()">
-                <button onclick="sendMsg()" class="bg-[#00a884] text-black font-black px-10 rounded-2xl uppercase">Enviar</button>
+            <div id="messages-flow" class="flex-1 p-10 overflow-y-auto flex flex-col gap-4"></div>
+            <div class="p-8 bg-[#202c33] flex gap-5">
+                <input type="text" id="msg-input" placeholder="Escribe un mensaje seguro..." class="flex-1 p-5 bg-[#2a3942] rounded-3xl outline-none text-white shadow-inner" onkeypress="if(event.key==='Enter') sendMsg()">
+                <button onclick="sendMsg()" class="bg-[#00a884] text-black font-black px-12 rounded-3xl uppercase text-xs shadow-lg shadow-green-900/20">Enviar</button>
             </div>
         </div>
       </main>
     </div>
 
-    <div id="admin-modal" class="hidden fixed inset-0 bg-[#0b141a] z-[3000] p-10 flex flex-col overflow-hidden">
-        <header class="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
-            <h2 class="text-[#00a884] font-black text-5xl uppercase italic tracking-tighter">CENTRO DE MANDO</h2>
-            <div class="flex gap-4">
-                <div class="bg-black/50 px-6 py-2 rounded-2xl border border-white/5 text-center">
-                    <p class="text-[8px] text-slate-500 font-bold">USUARIOS</p>
-                    <p id="stat-u" class="text-xl font-black">0</p>
-                </div>
-                <button onclick="toggleMaint()" id="maint-btn" class="px-8 py-3 rounded-xl font-black text-[10px] uppercase transition-all"></button>
-                <button onclick="closeAdmin()" class="bg-white/10 px-8 py-3 rounded-xl font-black text-[10px] uppercase">CERRAR</button>
+    <div id="admin-modal" class="hidden fixed inset-0 bg-[#0b141a] z-[3000] p-12 flex flex-col overflow-hidden">
+        <header class="flex justify-between items-end mb-12 border-b border-white/5 pb-10">
+            <div>
+                <h2 class="text-[#00a884] font-black text-6xl uppercase italic tracking-tighter">CENTRO DE MANDO</h2>
+                <p class="text-slate-500 font-bold uppercase tracking-[0.5em] mt-2">Seguridad de Red ZenApp 2026</p>
+            </div>
+            <div class="flex gap-6">
+                <button onclick="toggleMaint()" id="maint-btn" class="px-10 py-4 rounded-2xl font-black uppercase text-xs transition-all"></button>
+                <button onclick="closeAdmin()" class="bg-white/5 hover:bg-white/10 px-10 py-4 rounded-2xl font-black uppercase text-xs text-white">Desconectar</button>
             </div>
         </header>
-        <div class="flex gap-10 h-full overflow-hidden">
-            <div id="admin-list" class="flex-1 overflow-y-auto space-y-4 pr-4"></div>
-            <div class="w-96 bg-black/40 rounded-[40px] border border-red-500/20 p-6 flex flex-col">
-                <h3 class="text-red-500 font-black text-xs uppercase mb-4">🚨 REPORTES ACTIVOS</h3>
-                <div id="report-list" class="flex-1 overflow-y-auto space-y-3"></div>
+        <div class="flex gap-12 h-full overflow-hidden">
+            <div id="admin-list" class="flex-1 overflow-y-auto space-y-4 pr-6"></div>
+            <div class="w-[450px] bg-black/40 rounded-[50px] border border-red-500/20 p-8 flex flex-col">
+                <h3 class="text-red-500 font-black text-sm uppercase mb-6 flex items-center gap-2"><span>🚨</span> ALERTAS DE SEGURIDAD</h3>
+                <div id="report-list" class="flex-1 overflow-y-auto space-y-4"></div>
             </div>
         </div>
     </div>
   </div>
 
 <script>
-// --- CONFIG & DATA ---
+// --- CONFIGURACIÓN DE SEGURIDAD ---
 const MASTER_KEY = "ZM_X99_ROOT_#SECURITY_2026";
 const MASTER_ID = "123-abc";
-const ICONS = { gold: '<span class="v-gold text-sm">★</span>', blue: '<span class="text-blue-500 text-sm">✔</span>', green: '<span class="text-green-500 text-sm">🛡</span>' };
+
+// Generador de verificados blindados (HTML incopiable)
+const GET_BADGES_HTML = (u) => {
+    if(!u || !u.badges) return '';
+    let html = '';
+    if(u.badges.gold) html += '<span class="badge-core v-admin"></span>';
+    if(u.badges.green) html += '<span class="badge-core v-vip"></span>';
+    if(u.badges.blue) html += '<span class="badge-core v-user"></span>';
+    return html;
+};
 
 let users = JSON.parse(localStorage.getItem('zen_u')) || [];
 let messages = JSON.parse(localStorage.getItem('zen_m')) || [];
@@ -153,7 +191,7 @@ let maint = JSON.parse(localStorage.getItem('zen_mt')) || false;
 let me = null, talkingTo = null, score = 0;
 
 if (!users.find(u => u.id === MASTER_ID)) {
-    users.push({ id: MASTER_ID, name: "Admin", pass: "root", badges: {gold:true}, photo: "https://ui-avatars.com/api/?name=Admin&background=00a884&color=fff", isBan: false });
+    users.push({ id: MASTER_ID, name: "Admin", pass: "root", badges: {gold:true,green:true,blue:true}, photo: "https://ui-avatars.com/api/?name=Admin&background=00a884&color=fff", isBan: false });
 }
 save();
 
@@ -164,100 +202,14 @@ function save() {
     localStorage.setItem('zen_mt', JSON.stringify(maint));
 }
 
-// --- INSTANT MESSAGING ---
-function sendMsg() {
-    const input = document.getElementById('msg-input');
-    const text = input.value.trim();
-    if(!text || !talkingTo) return;
-
-    const newMsg = { from: me.id, to: talkingTo, text: text, time: Date.now() };
-    messages.push(newMsg);
-    input.value = "";
-    save();
-    
-    // RENDER INMEDIATO
-    renderMsgs(); 
-    renderChats();
-}
-
-function renderMsgs() {
-    const flow = document.getElementById('messages-flow');
-    const conv = messages.filter(m => (m.from === me.id && m.to === talkingTo) || (m.from === talkingTo && m.to === me.id));
-    flow.innerHTML = conv.map(m => `
-        <div class="flex flex-col ${m.from === me.id ? 'items-end' : 'items-start'}">
-            <div class="${m.from === me.id ? 'bg-[#005c4b]' : 'bg-[#202c33]'} p-4 rounded-2xl max-w-[75%] text-white shadow-lg animate-scale-in">
-                ${m.text}
-            </div>
-        </div>
-    `).join('');
-    flow.scrollTop = flow.scrollHeight;
-}
-
-// --- SEARCH USER ---
-function searchUser() {
-    const q = document.getElementById('user-search').value.trim().toUpperCase();
-    const res = document.getElementById('search-result');
-    const u = users.find(x => x.id === q);
-    
-    if(u && u.id !== me.id) {
-        res.classList.remove('hidden');
-        res.innerHTML = `
-            <div class="flex items-center gap-3">
-                <img src="${u.photo}" class="w-10 h-10 rounded-full">
-                <div><p class="text-white font-bold text-sm">${u.name}</p><p class="text-[10px] text-slate-500">${u.id}</p></div>
-            </div>
-            <button onclick="openChat('${u.id}')" class="bg-[#00a884] text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase">Abrir Chat</button>
-        `;
-    } else { alert("Usuario no encontrado"); res.classList.add('hidden'); }
-}
-
-// --- ZENMAIL & GAME PRO ---
-function toggleMail() { document.getElementById('mail-modal').classList.toggle('hidden'); }
-
-function toggleGame() {
-    const g = document.getElementById('game-container');
-    g.classList.toggle('hidden');
-    if(!g.classList.contains('hidden')) spawnObject();
-}
-
-function spawnObject() {
-    const area = document.getElementById('game-area');
-    area.innerHTML = "";
-    const rand = Math.random();
-    const obj = document.createElement('div');
-    obj.className = "game-target";
-    
-    if (rand > 0.8) { // Bonus Gold (+5)
-        obj.classList.add('target-bonus');
-        obj.innerHTML = "⭐";
-        obj.onclick = () => { score += 5; updateScore(); };
-    } else if (rand < 0.2) { // Danger Red (-3)
-        obj.classList.add('target-danger');
-        obj.innerHTML = "💀";
-        obj.onclick = () => { score -= 3; updateScore(); };
-    } else { // Normal (+1)
-        obj.classList.add('target-normal');
-        obj.innerHTML = "ZEN";
-        obj.onclick = () => { score += 1; updateScore(); };
-    }
-
-    obj.style.top = Math.random() * 70 + 15 + "%";
-    obj.style.left = Math.random() * 70 + 15 + "%";
-    area.appendChild(obj);
-    
-    // Auto-spawn si no se toca
-    setTimeout(() => { if(obj.parentNode === area) spawnObject(); }, 1200);
-}
-function updateScore() { document.getElementById('game-score').innerText = score; spawnObject(); }
-
-// --- ADMIN & AUTH (MANTENIDO) ---
+// --- AUTH & SEARCH ---
 function auth() {
     const u = document.getElementById('login-user').value.trim();
     const p = document.getElementById('login-pass').value.trim();
     if(!u || !p) return;
     let found = users.find(x => x.name.toLowerCase() === u.toLowerCase() && x.pass === p);
-    if(found) { if(found.isBan) return alert("BANEADO"); me = found; }
-    else { me = { id: "ZEN-"+Math.floor(1000+Math.random()*9000), name: u, pass: p, badges: {}, photo: "https://ui-avatars.com/api/?name="+u+"&background=random&color=fff", isBan: false }; users.push(me); }
+    if(found) { if(found.isBan) return alert("SISTEMA: CUENTA BANEADA"); me = found; }
+    else { me = { id: "ZEN-"+Math.floor(1000+Math.random()*9000), name: u, pass: p, badges: {}, photo: `https://ui-avatars.com/api/?name=${u}&background=random&color=fff`, isBan: false }; users.push(me); }
     save();
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('chat-interface').classList.remove('hidden');
@@ -267,6 +219,27 @@ function auth() {
     renderChats();
 }
 
+function searchUser() {
+    const q = document.getElementById('user-search').value.trim().toUpperCase();
+    const res = document.getElementById('search-result');
+    const u = users.find(x => x.id === q);
+    if(u && u.id !== me.id) {
+        res.classList.remove('hidden');
+        res.innerHTML = `
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <img src="${u.photo}" class="w-12 h-12 rounded-full border border-white/10">
+                    <div>
+                        <div class="flex items-center">${u.name}${GET_BADGES_HTML(u)}</div>
+                        <p class="text-[10px] text-slate-500 font-bold">${u.id}</p>
+                    </div>
+                </div>
+                <button onclick="openChat('${u.id}')" class="bg-[#00a884] text-black px-6 py-2 rounded-xl font-black text-[10px] uppercase">Chatear</button>
+            </div>`;
+    } else { alert("Usuario no encontrado"); res.classList.add('hidden'); }
+}
+
+// --- CHAT SYSTEM (INSTANTÁNEO) ---
 function openChat(id) {
     talkingTo = id;
     const u = users.find(x => x.id === id);
@@ -274,9 +247,33 @@ function openChat(id) {
     document.getElementById('active-chat').classList.remove('hidden');
     document.getElementById('target-name').innerText = u.name;
     document.getElementById('target-id').innerText = u.id;
-    document.getElementById('target-badges').innerHTML = getBadges(u);
-    document.getElementById('target-avatar-ui').innerHTML = `<img src="${u.photo}" class="w-full h-full rounded-full border border-white/10">`;
+    document.getElementById('target-badges').innerHTML = GET_BADGES_HTML(u);
+    document.getElementById('target-avatar-ui').innerHTML = `<img src="${u.photo}" class="w-full h-full rounded-full border border-white/10 shadow-lg">`;
     renderMsgs();
+}
+
+function sendMsg() {
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if(!text || !talkingTo) return;
+    messages.push({ from: me.id, to: talkingTo, text: text, time: Date.now() });
+    input.value = ""; 
+    save();
+    renderMsgs();
+    renderChats();
+}
+
+function renderMsgs() {
+    const flow = document.getElementById('messages-flow');
+    const conv = messages.filter(m => (m.from === me.id && m.to === talkingTo) || (m.from === talkingTo && m.to === me.id));
+    flow.innerHTML = conv.map(m => `
+        <div class="flex flex-col ${m.from === me.id ? 'items-end' : 'items-start'}">
+            <div class="${m.from === me.id ? 'bg-[#005c4b]' : 'bg-[#202c33]'} p-4 px-6 rounded-[22px] max-w-[80%] text-white shadow-xl animate-scale-in">
+                ${m.text}
+            </div>
+        </div>
+    `).join('');
+    flow.scrollTop = flow.scrollHeight;
 }
 
 function renderChats() {
@@ -285,73 +282,106 @@ function renderChats() {
     list.innerHTML = contacts.map(cid => {
         const u = users.find(x => x.id === cid);
         if(!u) return '';
-        return `<div onclick="openChat('${u.id}')" class="p-4 flex items-center gap-4 hover:bg-[#202c33] cursor-pointer rounded-2xl transition-all ${talkingTo === u.id ? 'bg-[#202c33] border-l-4 border-[#00a884]' : ''}"><img src="${u.photo}" class="w-12 h-12 rounded-full"><div><p class="text-white font-bold text-sm">${u.name} ${getBadges(u)}</p><p class="text-[10px] text-slate-500 uppercase">${u.id}</p></div></div>`;
+        return `
+        <div onclick="openChat('${u.id}')" class="p-4 flex items-center gap-4 hover:bg-[#202c33] cursor-pointer rounded-3xl transition-all ${talkingTo === u.id ? 'bg-[#202c33] border-r-4 border-[#00a884]' : ''}">
+            <img src="${u.photo}" class="w-14 h-14 rounded-full border border-white/5">
+            <div class="flex-1">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center font-bold text-white">${u.name}${GET_BADGES_HTML(u)}</div>
+                </div>
+                <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest">${u.id}</p>
+            </div>
+        </div>`;
     }).join('');
 }
 
+// --- PANEL ADMIN ---
 function renderAdmin() {
-    document.getElementById('stat-u').innerText = users.length;
     const mb = document.getElementById('maint-btn');
     mb.innerText = maint ? "SISTEMA CERRADO" : "SISTEMA ABIERTO";
     mb.className = maint ? "bg-red-600 text-white" : "bg-[#00a884] text-black";
     
     document.getElementById('admin-list').innerHTML = users.map(u => `
-        <div class="bg-[#202c33] p-5 rounded-3xl flex justify-between items-center border border-white/5 hover:border-[#00a884]/40 transition-all">
+        <div class="bg-[#202c33] p-6 rounded-[35px] flex justify-between items-center border border-white/5">
             <div class="flex items-center gap-4">
-                <img src="${u.photo}" class="w-12 h-12 rounded-full border-2 ${u.id===MASTER_ID?'border-yellow-500':'border-white/10'}">
+                <img src="${u.photo}" class="w-14 h-14 rounded-full border-2 ${u.id===MASTER_ID?'border-yellow-500':'border-white/10'}">
                 <div>
-                    <input onchange="editU('${u.id}','name',this.value)" value="${u.name}" class="bg-transparent text-white font-black outline-none border-b border-[#00a884]/30 w-32">
-                    <p class="text-[10px] text-slate-500">${u.id}</p>
-                    <input onchange="editU('${u.id}','pass',this.value)" value="${u.pass}" class="bg-transparent text-[8px] text-[#00a884] outline-none w-32">
+                    <input onchange="editU('${u.id}','name',this.value)" value="${u.name}" class="bg-transparent text-white font-black text-xl outline-none border-b border-[#00a884]/20 w-44">
+                    <p class="text-xs text-slate-500 mt-1">${u.id}</p>
                 </div>
             </div>
-            <div class="flex gap-4 items-center">
-                <div class="flex gap-2">
-                    <button onclick="tg('${u.id}','gold')" class="${u.badges?.gold?'v-gold':'opacity-20'} text-xl">★</button>
-                    <button onclick="tg('${u.id}','green')" class="${u.badges?.green?'text-green-500':'opacity-20'} text-xl">🛡</button>
+            <div class="flex gap-8 items-center">
+                <div class="flex gap-5">
+                    <button onclick="tg('${u.id}','gold')" class="text-2xl ${u.badges?.gold?'v-gold':'opacity-10'}">★</button>
+                    <button onclick="tg('${u.id}','green')" class="text-2xl ${u.badges?.green?'v-green':'opacity-10'}">🛡</button>
+                    <button onclick="tg('${u.id}','blue')" class="text-2xl ${u.badges?.blue?'v-blue':'opacity-10'}">✔</button>
                 </div>
-                <button onclick="ban('${u.id}',${!u.isBan})" class="${u.isBan?'bg-green-600':'bg-red-600'} text-white text-[9px] px-4 py-2 rounded-xl font-black uppercase">${u.isBan?'Unban':'Ban'}</button>
+                <button onclick="ban('${u.id}',${!u.isBan})" class="${u.isBan?'bg-green-600':'bg-red-600'} text-white text-[10px] px-8 py-3 rounded-2xl font-black uppercase transition-all shadow-lg">${u.isBan?'UNBAN':'BANEAR'}</button>
             </div>
         </div>
     `).join('');
 
     document.getElementById('report-list').innerHTML = reports.map((r, i) => `
-        <div class="p-4 bg-black/40 rounded-2xl border-l-4 border-red-500">
-            <p class="text-[10px] font-black text-red-500 uppercase">Reportado: ${r.target}</p>
-            <p class="text-xs text-slate-400 italic mt-1">"${r.reason}"</p>
-            <button onclick="delRep(${i})" class="text-[8px] text-white/20 mt-2 uppercase">Cerrar Caso</button>
+        <div class="p-5 bg-black/40 rounded-3xl border-l-4 border-red-500 shadow-xl">
+            <div class="flex justify-between items-start">
+                <p class="text-[10px] font-black text-red-500 uppercase">REPORTE CONTRA: ${r.target}</p>
+                <button onclick="delRep(${i})" class="text-slate-700 hover:text-white">✕</button>
+            </div>
+            <p class="text-sm text-slate-300 italic mt-2 leading-relaxed">"${r.reason}"</p>
+            <p class="text-[9px] text-slate-600 mt-4 font-bold">EMITIDO POR: ${r.from}</p>
         </div>
-    `).join('');
+    `).join('') || '<p class="text-center text-slate-700 text-xs uppercase font-black py-10">Perímetro Limpio</p>';
 }
 
-function openAdminPanel() { if(prompt("MASTER KEY:") === MASTER_KEY) { renderAdmin(); document.getElementById('admin-modal').classList.remove('hidden'); } }
+function openAdminPanel() { if(prompt("CÓDIGO MAESTRO DE ACCESO:") === MASTER_KEY) { renderAdmin(); document.getElementById('admin-modal').classList.remove('hidden'); } }
 function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
 function toggleMaint() { maint = !maint; save(); renderAdmin(); }
-function editU(id,k,v) { let u = users.find(x=>x.id===id); if(u) u[k]=v; save(); }
-function ban(id,st) { if(id===MASTER_ID) return; let u = users.find(x=>x.id===id); u.isBan=st; save(); renderAdmin(); }
 function tg(id,t) { let u = users.find(x=>x.id===id); if(!u.badges) u.badges={}; u.badges[t]=!u.badges[t]; save(); renderAdmin(); }
+function ban(id,st) { if(id===MASTER_ID) return; let u = users.find(x=>x.id===id); u.isBan=st; save(); renderAdmin(); }
+function editU(id,k,v) { let u = users.find(x=>x.id===id); if(u) u[k]=v; save(); }
 function delRep(i) { reports.splice(i,1); save(); renderAdmin(); }
-function sendReport() {
-    const id = document.getElementById('rep-id').value.trim().toUpperCase();
-    if(!id) return;
-    reports.push({ from: me.id, target: id, reason: "Denuncia de usuario" });
-    save(); alert("REPORTE ENVIADO");
+
+// --- GAME LOGIC ---
+function toggleGame() { document.getElementById('game-container').classList.toggle('hidden'); if(!document.getElementById('game-container').classList.contains('hidden')) spawnObject(); }
+function spawnObject() {
+    const area = document.getElementById('game-area'); area.innerHTML = "";
+    const rand = Math.random(); const obj = document.createElement('div'); obj.className = "game-target";
+    if (rand > 0.85) { obj.classList.add('target-bonus'); obj.innerHTML = "⭐"; obj.onclick = (e) => { e.stopPropagation(); score += 5; updateScore(); }; }
+    else if (rand < 0.15) { obj.classList.add('target-danger'); obj.innerHTML = "💀"; obj.onclick = (e) => { e.stopPropagation(); score -= 3; updateScore(); }; }
+    else { obj.classList.add('target-normal'); obj.innerHTML = "ZEN"; obj.onclick = (e) => { e.stopPropagation(); score += 1; updateScore(); }; }
+    obj.style.top = Math.random() * 70 + 15 + "%"; obj.style.left = Math.random() * 70 + 15 + "%"; area.appendChild(obj);
+}
+function updateScore() { document.getElementById('game-score').innerText = score; spawnObject(); }
+
+// --- OTROS ---
+function toggleMail() { document.getElementById('mail-modal').classList.toggle('hidden'); }
+function sendReport() { 
+    const id = document.getElementById('rep-id').value.trim().toUpperCase(); 
+    if(!id) return; 
+    reports.push({ from: me.id, target: id, reason: "Infracción de términos y seguridad" }); 
+    save(); alert("SISTEMA: REPORTE ENVIADO"); 
+    document.getElementById('rep-id').value = "";
 }
 function redeemSerial() {
     const s = document.getElementById('promo-code').value.trim().toUpperCase();
+    const type = document.getElementById('shop-type').value;
     if (/^\d{3}-[A-Z]{3}-\d{3}$/.test(s)) {
         let uNow = users.find(x => x.id === me.id);
-        uNow.badges = {gold:true}; save(); alert("✅ SERIAL VÁLIDO");
-    }
+        if(!uNow.badges) uNow.badges = {};
+        uNow.badges[type] = true;
+        save(); alert("✅ ACTUALIZACIÓN DE RANGO EXITOSA");
+        document.getElementById('my-badges').innerHTML = GET_BADGES_HTML(uNow);
+    } else { alert("SERIAL NO VÁLIDO"); }
 }
-function getBadges(u) { if(!u || !u.badges) return ''; return (u.badges.gold?ICONS.gold:'')+(u.badges.green?ICONS.green:'')+(u.badges.blue?ICONS.blue:''); }
 
+// Bucle de mantenimiento y baneo
 setInterval(() => {
     if(!me) return;
     const cur = users.find(x=>x.id===me.id);
     if(me.id !== MASTER_ID && (maint || cur.isBan)) {
-        document.body.innerHTML = `<div class="h-screen bg-black flex items-center justify-center text-red-600 font-black text-4xl uppercase italic">SISTEMA CERRADO / BANEADO</div>`;
+        document.body.innerHTML = `<div class="h-screen bg-black flex flex-col items-center justify-center text-red-600 font-black text-5xl uppercase italic text-center p-10"><p class="mb-6 animate-pulse">ERROR DE CONEXIÓN AL NÚCLEO</p><p class="text-xs tracking-[1em] text-slate-700">TU CUENTA HA SIDO DESCONECTADA POR UN ADMINISTRADOR O EL SISTEMA ESTÁ EN REPARACIÓN</p></div>`;
     }
+    document.getElementById('my-badges').innerHTML = GET_BADGES_HTML(cur);
 }, 3000);
 </script>
 </body>
